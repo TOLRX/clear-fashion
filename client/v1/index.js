@@ -35,6 +35,22 @@ console.log(MY_FAVORITE_BRANDS[0]);
 // I can find on these e-shops
 // 2. Log the variable
 
+const Cheapest_shirts = [
+  {
+    'name': 'Faguo',
+    'url': 'https://www.faguo-store.com/fr/vetements/7204-aubrac-t-shirt-coton-coton-recycle-ecru-bleu.html'
+  },
+  {
+    'name': 'Loom',
+    'url': 'https://www.loom.fr/collections/t-shirts-polos/products/le-t-shirt-homme'
+  },
+  {
+    'name': 'Ecclo',
+    'url': 'https://ecclo.fr/products/t-shirt-noir-boycott-world-cup-2022'
+  }
+];
+console.table(Cheapest_shirts)
+
 /**
  * 👕
  * Easy 😁?
@@ -48,10 +64,20 @@ console.log(MY_FAVORITE_BRANDS[0]);
 // 1. Create a variable and assign it the number of products
 // 2. Log the variable
 
+var lengthprod = marketplace.length;
+console.log(lengthprod);
+console.log(marketplace);
+
+
 // 🎯 TODO 3: Brands name
 // 1. Create a variable and assign it the list of brands name only
 // 2. Log the variable
 // 3. Log how many brands we have
+
+const Brandnames = marketplace.map(x=>x['brand']);
+console.log(Brandnames);
+var Brandnames_set = new Set(Brandnames);
+console.log(Brandnames_set.size);
 
 // 🎯 TODO 4: Sort by price
 // 1. Create a function to sort the marketplace products by price
