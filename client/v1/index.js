@@ -522,6 +522,7 @@ console.log(jacket2);
 
 console.log("TODO LAST:");
 
+//Put the stringify for each object which is not an str + a name to find it again (by parsing JSON).
 console.log("Dict", JSON.stringify(MY_FAVORITE_BRANDS));
 window.localStorage.setItem("Dict", JSON.stringify(MY_FAVORITE_BRANDS));
 console.log(localStorage);
