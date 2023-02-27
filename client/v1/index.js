@@ -35,6 +35,8 @@ console.log(MY_FAVORITE_BRANDS[0]);
 // I can find on these e-shops
 // 2. Log the variable
 
+console.log("TODO 1:")
+
 const Cheapest_shirts = [
   {
     'name': 'Faguo',
@@ -63,6 +65,7 @@ console.table(Cheapest_shirts)
 // 🎯 TODO 2: Number of products
 // 1. Create a variable and assign it the number of products
 // 2. Log the variable
+console.log("TODO 2:")
 
 var lengthprod = marketplace.length;
 console.log(lengthprod);
@@ -73,6 +76,8 @@ console.log(marketplace);
 // 1. Create a variable and assign it the list of brands name only
 // 2. Log the variable
 // 3. Log how many brands we have
+
+console.log("TODO 3:")
 
 const Brandnames = marketplace.map(x=>x['brand']);
 console.log(Brandnames);
@@ -99,8 +104,9 @@ function Sorting(ArrayToSort ) {
   return ArrayToSort
 };
 
-
-var sortedprice = Sorting(marketplace);
+console.log("TODO 4:")
+const tab1 = [...marketplace];
+var sortedprice = Sorting(tab1);
 console.log(sortedprice);
 
 
@@ -124,17 +130,39 @@ function Sorting_date(ArrayToSort ) {
   return ArrayToSort
 };
 
+console.log("TODO 5:")
 
-var sorteddate = Sorting_date(marketplace);
+const tab2 = [...marketplace];
+var sorteddate = Sorting_date(tab2);
 console.log(sorteddate);
 
 // 🎯 TODO 6: Filter a specific price range
 // 1. Filter the list of products between 50€ and 100€
 // 2. Log the list
 
+function Filtering(value){
+  return 50 <= value['price'] &&  value['price'] <= 100;
+}
+ const FilteredProd = marketplace.filter(Filtering);
+ console.log("TODO 6:");
+ console.log("Product between 50 and 100 €");
+
+ console.log(FilteredProd);
+
 // 🎯 TODO 7: Average price
 // 1. Determine the average price of the marketplace
 // 2. Log the average
+
+console.log("TODO 7:");
+var avg =0;
+for (var i=0 ;i<marketplace.length;i++) {
+  avg = avg + marketplace[i]['price'];
+  
+}
+avg = avg/marketplace.length;
+console.log("Average price of marketplace :");
+console.log(avg);
+
 
 /**
  * 🏎
@@ -370,17 +398,50 @@ const COTELE_PARIS = [
 // // 1. Log if we have new products only (true or false)
 // // A new product is a product `released` less than 2 weeks.
 
+function New_released(value){
+  return (value['released'] - Date()) <= 2*7*24*3600*1000; //Temps de 2 semaines en millisecondes
+}
+console.log('Part 2');
+ const New_release = COTELE_PARIS.filter(New_released);
+ console.log("TODO 1:");
+ console.log("Recent product :");
+
+ console.log(New_release);
+ console.log('But with 3 months :')
+
+ function New_released_2(value){
+  const current = new Date();
+  const date_rel = new Date(value['released']);
+  return (current - date_rel) <= 91*24*3600*1000; //Temps de 3 mois en millisecondes
+}
+const New_release2 = COTELE_PARIS.filter(New_released_2);
+
+console.log(New_release2);
+
 // 🎯 TODO 2: Reasonable price
 // // 1. Log if coteleparis is a reasonable price shop (true or false)
 // // A reasonable price if all the products are less than 100€
+
+console.log("TODO 2:");
+const Reasonable = COTELE_PARIS.filter(obj => obj['price'] <100);
+
+console.log(Reasonable);
+
 
 // 🎯 TODO 3: Find a specific product
 // 1. Find the product with the uuid `2b9a47e3-ed73-52f6-8b91-379e9c8e526c`
 // 2. Log the product
 
+console.log("TODO 3:");
+const idsearch = COTELE_PARIS.filter(obj => obj['uuid'] == '2b9a47e3-ed73-52f6-8b91-379e9c8e526c');
+
+console.log(idsearch);
+
 // 🎯 TODO 4: Delete a specific product
 // 1. Delete the product with the uuid `2b9a47e3-ed73-52f6-8b91-379e9c8e526c`
 // 2. Log the new list of product
+
+
 
 // 🎯 TODO 5: Save the favorite product
 // We declare and assign a variable called `blueJacket`
