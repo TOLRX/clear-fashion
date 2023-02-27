@@ -84,10 +84,49 @@ console.log(Brandnames_set.size);
 // 2. Create a variable and assign it the list of products by price from lowest to highest
 // 3. Log the variable
 
+function Sorting(ArrayToSort ) {
+  for (var i=0;i<ArrayToSort.length;i++){
+    var min = i;
+    for (var j=i+1; j<ArrayToSort.length;j++) {
+      if(ArrayToSort[j]['price'] < ArrayToSort[min]['price']){
+        min = j; 
+      }
+   }
+   var tmp = ArrayToSort[i];
+   ArrayToSort[i] = ArrayToSort[min];
+   ArrayToSort[min] = tmp;
+  }
+  return ArrayToSort
+};
+
+
+var sortedprice = Sorting(marketplace);
+console.log(sortedprice);
+
+
 // 🎯 TODO 5: Sort by date
 // 1. Create a function to sort the marketplace objects by products date
 // 2. Create a variable and assign it the list of products by date from recent to old
 // 3. Log the variable
+
+function Sorting_date(ArrayToSort ) {
+  for (var i=0;i<ArrayToSort.length;i++){
+    var min = i;
+    for (var j=i+1; j<ArrayToSort.length;j++) {
+      if(ArrayToSort[j]['released'] > ArrayToSort[min]['released']){
+        min = j; 
+      }
+   }
+   var tmp = ArrayToSort[i];
+   ArrayToSort[i] = ArrayToSort[min];
+   ArrayToSort[min] = tmp;
+  }
+  return ArrayToSort
+};
+
+
+var sorteddate = Sorting_date(marketplace);
+console.log(sorteddate);
 
 // 🎯 TODO 6: Filter a specific price range
 // 1. Filter the list of products between 50€ and 100€
