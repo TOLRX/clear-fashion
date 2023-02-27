@@ -441,10 +441,26 @@ console.log(idsearch);
 // 1. Delete the product with the uuid `2b9a47e3-ed73-52f6-8b91-379e9c8e526c`
 // 2. Log the new list of product
 
+console.log("TODO 4:");
+
+const tab3 = [...COTELE_PARIS];
+
+for( var i = 0; i < tab3.length; i++){ 
+    
+  if ( tab3[i]['uuid'] == '2b9a47e3-ed73-52f6-8b91-379e9c8e526c' ) { 
+
+      tab3.splice(i, 1); 
+  }
+}
+console.log(tab3)
 
 
 // 🎯 TODO 5: Save the favorite product
 // We declare and assign a variable called `blueJacket`
+
+console.log("TODO 5:");
+
+
 let blueJacket = {
   'link':
     'https://coteleparis.com/collections/homme/products/veste-cotele-navy?_pos=8&_fid=2fee5844b&_ss=c&variant=42801558585574?variant=42801558585574&tag=homme',
@@ -466,6 +482,11 @@ jacket.favorite = true;
 // 1. Log `blueJacket` and `jacket` variables
 // 2. What do you notice?
 
+console.log(blueJacket);
+console.log(jacket);
+
+// We notice that the copy and the original get changed.
+
 // we make a new assignment again
 blueJacket = {
   'link':
@@ -481,6 +502,14 @@ blueJacket = {
 
 // 3. Update `jacket` property with `favorite` to true WITHOUT changing blueJacket properties
 
+const jacket2 = {...blueJacket};
+jacket2.favorite = true;
+
+console.log(blueJacket);
+console.log(jacket2);
+
+// Here it works well.
+
 /**
  * 🎬
  * The End: last thing to do
@@ -490,3 +519,12 @@ blueJacket = {
 // 🎯 LAST TODO: Save in localStorage
 // 1. Save MY_FAVORITE_BRANDS in the localStorage
 // 2. log the localStorage
+
+console.log("TODO LAST:");
+
+console.log("Dict", JSON.stringify(MY_FAVORITE_BRANDS));
+window.localStorage.setItem("Dict", JSON.stringify(MY_FAVORITE_BRANDS));
+console.log(localStorage);
+
+var obj = JSON.parse(localStorage.getItem("Dict"));
+console.log(obj);
