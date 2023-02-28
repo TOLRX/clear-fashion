@@ -33,6 +33,7 @@ const spanNbProducts = document.querySelector('#nbProducts');
  * @param {Object} meta - pagination meta info
  */
 const setCurrentProducts = ({result, meta}) => {
+  console.log(result);
   currentProducts = result;
   currentPagination = meta;
 };
@@ -124,6 +125,7 @@ const render = (products, pagination) => {
 
 /**
  * Select the number of products to display
+ * Feature 0
  */
 selectShow.addEventListener('change', async (event) => {
   const products = await fetchProducts(currentPagination.currentPage, parseInt(event.target.value));
@@ -138,3 +140,19 @@ document.addEventListener('DOMContentLoaded', async () => {
   setCurrentProducts(products);
   render(currentProducts, currentPagination);
 });
+
+/**
+ * Browsing several pages
+ * Feature 1
+ */ 
+selectPage.addEventListener('change', async (event) => {
+  const products = await fetchProducts(parseInt(event.target.value), currentProducts.product);
+  console.log(products);
+  setCurrentProducts(products, parseInt(event.target.value));
+  render(currentProducts, currentPagination);
+});
+
+/**
+ * Browsing several pages
+ * Feature 2
+ */ 
