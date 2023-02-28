@@ -516,6 +516,7 @@ console.log(New_release2);
 // // 1. Log if coteleparis is a reasonable price shop (true or false)
 // // A reasonable price if all the products are less than 100€
 
+console.log('Product with a reasonable price :');
 console.log("TODO 2:");
 const Reasonable = COTELE_PARIS.filter(obj => obj['price'] <100);
 
@@ -526,6 +527,7 @@ console.log(Reasonable);
 // 1. Find the product with the uuid `2b9a47e3-ed73-52f6-8b91-379e9c8e526c`
 // 2. Log the product
 
+console.log('Product with a certain id :');
 console.log("TODO 3:");
 const idsearch = COTELE_PARIS.filter(obj => obj['uuid'] == '2b9a47e3-ed73-52f6-8b91-379e9c8e526c');
 
@@ -579,6 +581,7 @@ jacket.favorite = true;
 console.log(blueJacket);
 console.log(jacket);
 
+console.log('We notice that the copy and the original get changed.')
 // We notice that the copy and the original get changed.
 
 // we make a new assignment again
@@ -602,6 +605,7 @@ jacket2.favorite = true;
 console.log(blueJacket);
 console.log(jacket2);
 
+console.log('Here it works well.')
 // Here it works well.
 
 /**
