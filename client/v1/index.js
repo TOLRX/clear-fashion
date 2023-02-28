@@ -188,23 +188,88 @@ console.log(avg);
 // 3. Log the number of products by brands
 
 console.log("TODO 8:");
-/*
 
-var brand = {}; // create an empty array
+var dico = {};
 
- for (var i=0 ;i<marketplace.length;i++) {
-   brand.marketplace[i]['brand'] =marketplace[i];
- }
-console.log(brand); 
-*/
+for(i = 0; i < marketplace.length; i++){
+	if(!(marketplace[i]['brand'] in dico)){
+		dico[marketplace[i]['brand']] = [marketplace[i]];
+	} else {
+		dico[marketplace[i]['brand']].push(marketplace[i]);
+	}
+};
+
+console.log('All products grouped by brands :');
+console.log(dico);
+
+var keys = Object.keys(dico);
+for(i = 0; i < keys.length; i++){
+	console.log('Number of objects in '+keys[i] + ' : ' + dico[keys[i]].length.toString());
+}
+
+//Use map reduce
 
 // 🎯 TODO 9: Sort by price for each brand
 // 1. For each brand, sort the products by price, from highest to lowest
 // 2. Log the sort
 
+console.log("TODO 9:");
+
+function Sorting_inverse(ArrayToSort ) {
+  for (var i=0;i<ArrayToSort.length;i++){
+    var min = i;
+    for (var j=i+1; j<ArrayToSort.length;j++) {
+      if(ArrayToSort[j]['price'] > ArrayToSort[min]['price']){
+        min = j; 
+      }
+   }
+   var tmp = ArrayToSort[i];
+   ArrayToSort[i] = ArrayToSort[min];
+   ArrayToSort[min] = tmp;
+  }
+  return ArrayToSort
+};
+
+var dico2={};
+dico2 = JSON.parse(JSON.stringify(dico));
+keys = Object.keys(dico2);
+
+for (i = 0; i < keys.length; i++){
+	dico2[keys[i]] = Sorting_inverse(dico2[keys[i]])
+}
+console.log('Dict with price sorted products :');
+console.log(dico2);
+
 // 🎯 TODO 10: Sort by date for each brand
 // 1. For each brand, sort the products by date, from old to recent
 // 2. Log the sort
+
+console.log("TODO 10:");
+
+function Sorting_date_inverse(ArrayToSort ) {
+  for (var i=0;i<ArrayToSort.length;i++){
+    var min = i;
+    for (var j=i+1; j<ArrayToSort.length;j++) {
+      if(ArrayToSort[j]['released'] < ArrayToSort[min]['released']){
+        min = j; 
+      }
+   }
+   var tmp = ArrayToSort[i];
+   ArrayToSort[i] = ArrayToSort[min];
+   ArrayToSort[min] = tmp;
+  }
+  return ArrayToSort
+};
+
+var dico3={};
+dico3 = JSON.parse(JSON.stringify(dico));
+keys = Object.keys(dico3);
+
+for (i = 0; i < keys.length; i++){
+	dico3[keys[i]] = Sorting_date_inverse(dico3[keys[i]])
+}
+console.log('Dict with date sorted products :');
+console.log(dico3);
 
 /**
  * 💶
@@ -216,6 +281,24 @@ console.log(brand);
 // 🎯 TODO 11: Compute the p90 price value
 // 1. Compute the p90 price value of each brand
 // The p90 value (90th percentile) is the lower value expected to be exceeded in 90% of the products
+
+// In dico2, products are sorted by price so we will use it to compute the p90 value: 
+
+console.log("TODO 11:");
+var p90 = {};
+for (i = 0; i < keys.length; i++){
+  if (dico2[keys[i]].length <20){ // below this number, each value taken will be the last.
+    //If it is not the case, it means that it will be above to the last one and equal to the second last
+    // > 10% at 20
+    p90[keys[i]] = dico2[keys[i]][dico2[keys[i]].length -1]['price']
+  }
+  else { //If it is not the case, we compute the formula length*(9/10) +1 and we take the natural above.
+    // We had +1 because the result will be equal to the one chosen (-1 bcs index begin at 0).
+    p90[keys[i]] = dico2[keys[i]][Math.ceil(dico2[keys[i]].length*(9/10)+1) - 1]['price']
+  }
+}
+console.log('Dict withp90 values :');
+console.log(p90);
 
 /**
  * 🧥
