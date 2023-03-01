@@ -26,6 +26,7 @@ const selectShow = document.querySelector('#show-select');
 const selectPage = document.querySelector('#page-select');
 const sectionProducts = document.querySelector('#products');
 const spanNbProducts = document.querySelector('#nbProducts');
+const selectBrand = document.querySelector('#brand-select');
 
 /**
  * Set global value
@@ -103,6 +104,21 @@ const renderPagination = pagination => {
 
   selectPage.innerHTML = options;
   selectPage.selectedIndex = currentPage - 1;
+  const Brands = currentProducts.map(x=>x['brand']);
+  var Brands_set = new Set(Brands);
+  var Brandnames = Array.from(Brands_set);
+  const Brandsoptions = `<option value="All">All</option>` + Array.from(
+    {'length': Brandnames.length},
+    (value, index) => `<option value="${Brandnames[index]}">${Brandnames[index]}</option>`
+  ).join('');
+  selectBrand.innerHTML = Brandsoptions;
+  if(Brands_set.size == 1) {selectBrand.selectedIndex = 1;}
+  else {selectBrand.selectedIndex = 0;}
+  console.log(Brandsoptions)
+  console.log(Brands_set);
+
+
+
 };
 
 /**
@@ -147,16 +163,34 @@ document.addEventListener('DOMContentLoaded', async () => {
  * Feature 1
  */ 
 selectPage.addEventListener('change', async (event) => {
-  const products = await fetchProducts(parseInt(event.target.value), currentProducts.length);
-  console.log(currentProducts);
-
-  console.log(products);
+  const products = await fetchProducts(parseInt(event.target.value), currentPagination.pageSize);
+  console.log(currentPagination);
   setCurrentProducts(products, parseInt(event.target.value));
   
   render(currentProducts, currentPagination);
 });
 
 /**
- * Browsing several pages
+ * Filtering by brands
  * Feature 2
  */ 
+  
+selectBrand.addEventListener('change', async (event) => { 
+  if (event.target.value === 'All') {
+    const products = await fetchProducts(currentPagination.currentPage, currentPagination.pageSize);
+    setCurrentProducts(products);
+    render(currentProducts, currentPagination);
+  } else {
+    const Brandlist = [];
+    for (var i=0;i<currentProducts.length;i++) {
+      if (currentProducts[i]['brand'] == event.target.value) {Brandlist.push(currentProducts[i]);}
+    }
+    var Brandobj = {'result': Brandlist, 'meta': currentPagination}
+    setCurrentProducts(Brandobj, currentPagination);
+    console.log(event.target.value);
+    render(currentProducts, currentPagination);
+    console.log(event.target.value);
+  }
+  
+});
+
