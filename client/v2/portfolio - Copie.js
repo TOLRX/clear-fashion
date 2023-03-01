@@ -35,6 +35,7 @@ const spanNbProducts = document.querySelector('#nbProducts');
 const setCurrentProducts = ({result, meta}) => {
   currentProducts = result;
   currentPagination = meta;
+ 
 };
 
 /**
@@ -45,9 +46,9 @@ const setCurrentProducts = ({result, meta}) => {
  */
 const fetchProducts = async (page = 1, size = 12) => {
   try {
-    const total = parseInt(document.getElementById('nbProducts').textContent) +222;
-    if (size === 48 && page >5) {page =5;}
-    if (size === 24 && page >10) {page =10;}
+    if (size == 48 && page >5) {page =5;}
+    if (size == 24 && page >10) {page =10;}
+
     const response = await fetch(
       `https://clear-fashion-api.vercel.app?page=${page}&size=${size}`
     );
