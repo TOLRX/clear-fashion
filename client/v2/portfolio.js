@@ -27,6 +27,8 @@ const selectPage = document.querySelector('#page-select');
 const sectionProducts = document.querySelector('#products');
 const spanNbProducts = document.querySelector('#nbProducts');
 const selectBrand = document.querySelector('#brand-select');
+const reasonable = document.querySelector('#reasonable_check');
+
 
 /**
  * Set global value
@@ -114,9 +116,6 @@ const renderPagination = pagination => {
   selectBrand.innerHTML = Brandsoptions;
   if(Brands_set.size == 1) {selectBrand.selectedIndex = 1;}
   else {selectBrand.selectedIndex = 0;}
-  console.log(Brandsoptions)
-  console.log(Brands_set);
-
 
 
 };
@@ -148,6 +147,7 @@ const render = (products, pagination) => {
 selectShow.addEventListener('change', async (event) => {
   const products = await fetchProducts(currentPagination.currentPage, parseInt(event.target.value));
   setCurrentProducts(products);
+  
   render(currentProducts, currentPagination);
 });
 
@@ -163,11 +163,22 @@ document.addEventListener('DOMContentLoaded', async () => {
  * Feature 1
  */ 
 selectPage.addEventListener('change', async (event) => {
-  const products = await fetchProducts(parseInt(event.target.value), currentPagination.pageSize);
-  console.log(currentPagination);
+  var products = await fetchProducts(parseInt(event.target.value), currentPagination.pageSize);
   setCurrentProducts(products, parseInt(event.target.value));
-  
+
+  // Check if Reasonable is checked
+  const checked = document.querySelector('#reasonable_check:checked') !== null;
+  console.log(checked); 
+  if (checked) {
+    console.log(products.result);
+    const Reas_obj = products.result.filter(obj => obj['price'] <50);
+    products = {'result': Reas_obj, 'meta': currentPagination};
+    setCurrentProducts(products, currentPagination);
+
+  }
+
   render(currentProducts, currentPagination);
+
 });
 
 /**
@@ -194,3 +205,27 @@ selectBrand.addEventListener('change', async (event) => {
   
 });
 
+/**
+ * Filtering by reasonable product (price<50)
+ * Feature 3
+ */ 
+reasonable.addEventListener('change', async function()  {
+  const checked = document.querySelector('#reasonable_check:checked') !== null;
+  console.log(checked); 
+  if (checked) {
+    const Reas_obj = currentProducts.filter(obj => obj['price'] <50);
+    var ReasProducts = {'result': Reas_obj, 'meta': currentPagination};
+    setCurrentProducts(ReasProducts, currentPagination);
+    render(currentProducts, currentPagination);
+  }
+  else {
+    const products = await fetchProducts(currentPagination.currentPage, currentPagination.pageSize);
+    setCurrentProducts(products);
+    render(currentProducts, currentPagination);
+  }
+}) 
+         
+/*
+const Reasonable = COTELE_PARIS.filter(obj => obj['price'] <100);
+
+console.log(Reasonable); */
