@@ -27,6 +27,7 @@ const selectPage = document.querySelector('#page-select');
 const sectionProducts = document.querySelector('#products');
 const spanNbProducts = document.querySelector('#nbProducts');
 const selectBrand = document.querySelector('#brand-select');
+const recent = document.querySelector('#recent_check');
 const reasonable = document.querySelector('#reasonable_check');
 
 
@@ -155,6 +156,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const products = await fetchProducts();
 
   setCurrentProducts(products);
+
   render(currentProducts, currentPagination);
 });
 
@@ -167,15 +169,25 @@ selectPage.addEventListener('change', async (event) => {
   setCurrentProducts(products, parseInt(event.target.value));
 
   // Check if Reasonable is checked
-  const checked = document.querySelector('#reasonable_check:checked') !== null;
+  var checked = document.querySelector('#reasonable_check:checked') !== null;
   console.log(checked); 
   if (checked) {
     console.log(products.result);
     const Reas_obj = products.result.filter(obj => obj['price'] <50);
     products = {'result': Reas_obj, 'meta': currentPagination};
     setCurrentProducts(products, currentPagination);
+    }
 
-  }
+  //Check if Recent is checked
+  checked = document.querySelector('#recent_check:checked') !== null;
+  console.log(checked);
+  if (checked) {
+    const recent_obj = currentProducts.filter(New_released);
+    var RecentProds = {'result': recent_obj, 'meta': currentPagination};
+    setCurrentProducts(RecentProds, currentPagination);
+
+    }
+
 
   render(currentProducts, currentPagination);
 
@@ -190,6 +202,7 @@ selectBrand.addEventListener('change', async (event) => {
   if (event.target.value === 'All') {
     const products = await fetchProducts(currentPagination.currentPage, currentPagination.pageSize);
     setCurrentProducts(products);
+    console.log(products);
     render(currentProducts, currentPagination);
   } else {
     const Brandlist = [];
@@ -198,34 +211,72 @@ selectBrand.addEventListener('change', async (event) => {
     }
     var Brandobj = {'result': Brandlist, 'meta': currentPagination}
     setCurrentProducts(Brandobj, currentPagination);
-    console.log(event.target.value);
     render(currentProducts, currentPagination);
     console.log(event.target.value);
   }
   
 });
 
+
 /**
- * Filtering by reasonable product (price<50)
+ * Filtering by recent product (date - date_release <2 weeks)
  * Feature 3
  */ 
-reasonable.addEventListener('change', async function()  {
-  const checked = document.querySelector('#reasonable_check:checked') !== null;
-  console.log(checked); 
+function New_released(value){
+  const current = new Date();
+  const date_rel = new Date(value['released']);
+  return (current - date_rel) <= 91*24*3600*1000; //3 months in milliseconds (no match wuth 2 weeks)
+}
+
+recent.addEventListener('change', async function()  {
+  var checked = document.querySelector('#recent_check:checked') !== null;
   if (checked) {
-    const Reas_obj = currentProducts.filter(obj => obj['price'] <50);
-    var ReasProducts = {'result': Reas_obj, 'meta': currentPagination};
-    setCurrentProducts(ReasProducts, currentPagination);
-    render(currentProducts, currentPagination);
+    const recent_obj = currentProducts.filter(New_released);
+    var RecentProds = {'result': recent_obj, 'meta': currentPagination};
+    setCurrentProducts(RecentProds, currentPagination);
   }
   else {
     const products = await fetchProducts(currentPagination.currentPage, currentPagination.pageSize);
     setCurrentProducts(products);
-    render(currentProducts, currentPagination);
   }
+  
+  //Check for potential reasonable product
+  checked = document.querySelector('#reasonable_check:checked') !== null;
+  if (checked) {
+    const Reas_obj = currentProducts.filter(obj => obj['price'] <50);
+    var products = {'result': Reas_obj, 'meta': currentPagination};
+    setCurrentProducts(products, currentPagination);
+    }
+  render(currentProducts, currentPagination);
 }) 
-         
-/*
-const Reasonable = COTELE_PARIS.filter(obj => obj['price'] <100);
 
-console.log(Reasonable); */
+
+/**
+ * Filtering by reasonable product (price<50)
+ * Feature 4
+ */ 
+reasonable.addEventListener('change', async function()  {
+  var checked = document.querySelector('#reasonable_check:checked') !== null;
+  if (checked) {
+    const Reas_obj = currentProducts.filter(obj => obj['price'] <50);
+    var ReasProducts = {'result': Reas_obj, 'meta': currentPagination};
+    setCurrentProducts(ReasProducts, currentPagination);
+  }
+  else {
+    const products = await fetchProducts(currentPagination.currentPage, currentPagination.pageSize);
+    setCurrentProducts(products);
+  }
+
+  //Check if Recent is checked
+  checked = document.querySelector('#recent_check:checked') !== null;
+  console.log(checked);
+  if (checked) {
+    const recent_obj = currentProducts.filter(New_released);
+    var RecentProds = {'result': recent_obj, 'meta': currentPagination};
+    setCurrentProducts(RecentProds, currentPagination);
+    }
+
+    render(currentProducts, currentPagination);
+}) 
+     
+
