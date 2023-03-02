@@ -32,6 +32,10 @@ const reasonable = document.querySelector('#reasonable_check');
 const sorting = document.querySelector('#sort-select');
 const spanNbNews = document.querySelector('#nbNews');
 const spanNbBrands = document.querySelector('#nbBrands');
+const spanp50 = document.querySelector('#p50');
+const spanp90 = document.querySelector('#p90');
+const spanp95 = document.querySelector('#p95');
+
 
 /**
  * Set global value
@@ -127,6 +131,36 @@ const renderPagination = pagination => {
  * Render page selector
  * @param  {Object} pagination
  */
+
+//If the percentile is the lowest element of a list which is higher than p*100 % off total list values, we
+//calculate it with this function to apply to an ascendant sorted array:
+function percentile_value(arr, p){ // With sorted array
+  var ref = -1
+  for (var i=0;i<arr.length;i++){
+    console.log(i/arr.length);
+    console.log(arr[i]);
+    if((i/arr.length) >= p) {
+      if (arr[i-1] != arr[i]) {return arr[i];} // This line is necessary if the value which is over P%
+                                         // of the array is equal to the previous one
+    }
+  }
+}
+
+function Sorting_val(ArrayToSort) {
+  for (var i=0;i<ArrayToSort.length;i++){
+    var min = i;
+    for (var j=i+1; j<ArrayToSort.length;j++) {
+      if(ArrayToSort[j] < ArrayToSort[min]){
+        min = j; 
+      }
+   }
+   var tmp = ArrayToSort[i];
+   ArrayToSort[i] = ArrayToSort[min];
+   ArrayToSort[min] = tmp;
+  }
+  return ArrayToSort
+};
+
 const renderIndicators = pagination => {
   const {count} = pagination;
   console.log(pagination);
@@ -144,9 +178,17 @@ const renderIndicators = pagination => {
 
     //Number of Brands
     const Brandnames = totalproducts.result.map(x=>x['brand']);
-    console.log(Brandnames);
     var Brandnames_set = new Set(Brandnames);
     spanNbBrands.innerHTML = Brandnames_set.size;
+
+    //P-Values :
+    var Price_values = totalproducts.result.map(x => x['price']);
+    Price_values = Sorting_val(Price_values);
+    console.log(Price_values);
+    spanp50.innerHTML = percentile_value(Price_values,0.5);
+    spanp90.innerHTML = percentile_value(Price_values,0.9);
+    spanp95.innerHTML = percentile_value(Price_values,0.95);    
+
   })();
   
   

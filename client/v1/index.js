@@ -301,7 +301,7 @@ console.log('Dict withp90 values :');
 console.log(p90);
 
 //If the percentile is the lowest element of a list which is higher than p*100 % off total list values, we
-//calculate it with this function with a sorted array:
+//calculate it with this function to apply to an ascendant sorted array:
 function percentile_value(arr, p){ // With sorted array
   for (i=0;i<arr.length;i++){
     console.log(arr[i]);
