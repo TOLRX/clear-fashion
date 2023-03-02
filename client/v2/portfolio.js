@@ -35,6 +35,7 @@ const spanNbBrands = document.querySelector('#nbBrands');
 const spanp50 = document.querySelector('#p50');
 const spanp90 = document.querySelector('#p90');
 const spanp95 = document.querySelector('#p95');
+const spanrelease = document.querySelector('#Last_rel');
 
 
 /**
@@ -161,6 +162,7 @@ function Sorting_val(ArrayToSort) {
   return ArrayToSort
 };
 
+
 const renderIndicators = pagination => {
   const {count} = pagination;
   console.log(pagination);
@@ -187,7 +189,12 @@ const renderIndicators = pagination => {
     console.log(Price_values);
     spanp50.innerHTML = percentile_value(Price_values,0.5);
     spanp90.innerHTML = percentile_value(Price_values,0.9);
-    spanp95.innerHTML = percentile_value(Price_values,0.95);    
+    spanp95.innerHTML = percentile_value(Price_values,0.95);
+    
+    var datesort = totalproducts.result.map(x => x['released']);
+    var datesort = Sorting_val(datesort);
+    console.log(datesort);
+    spanrelease.innerHTML = datesort[count-1];
 
   })();
   
