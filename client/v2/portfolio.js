@@ -30,7 +30,8 @@ const selectBrand = document.querySelector('#brand-select');
 const recent = document.querySelector('#recent_check');
 const reasonable = document.querySelector('#reasonable_check');
 const sorting = document.querySelector('#sort-select');
-
+const spanNbNews = document.querySelector('#nbNews');
+const spanNbBrands = document.querySelector('#nbBrands');
 
 /**
  * Set global value
@@ -128,8 +129,27 @@ const renderPagination = pagination => {
  */
 const renderIndicators = pagination => {
   const {count} = pagination;
+  console.log(pagination);
 
+  //Number of products
   spanNbProducts.innerHTML = count;
+
+  //Number of new products
+  (async () => {
+    const totalproducts = await fetchProducts(1, count);
+    console.log(count);
+    //Number of new products
+    const recent_obj = totalproducts.result.filter(New_released);
+    spanNbNews.innerHTML = recent_obj.length;
+
+    //Number of Brands
+    const Brandnames = totalproducts.result.map(x=>x['brand']);
+    console.log(Brandnames);
+    var Brandnames_set = new Set(Brandnames);
+    spanNbBrands.innerHTML = Brandnames_set.size;
+  })();
+  
+  
 };
 
 const render = (products, pagination) => {
