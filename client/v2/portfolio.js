@@ -29,6 +29,7 @@ const spanNbProducts = document.querySelector('#nbProducts');
 const selectBrand = document.querySelector('#brand-select');
 const recent = document.querySelector('#recent_check');
 const reasonable = document.querySelector('#reasonable_check');
+const sorting = document.querySelector('#sort-select');
 
 
 /**
@@ -150,6 +151,7 @@ selectShow.addEventListener('change', async (event) => {
   setCurrentProducts(products);
   
   render(currentProducts, currentPagination);
+  sorting.selectedIndex = 0;
 });
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -158,6 +160,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   setCurrentProducts(products);
 
   render(currentProducts, currentPagination);
+  sorting.selectedIndex = 0;
 });
 
 /**
@@ -190,7 +193,7 @@ selectPage.addEventListener('change', async (event) => {
 
 
   render(currentProducts, currentPagination);
-
+  sorting.selectedIndex = 0;
 });
 
 /**
@@ -214,7 +217,8 @@ selectBrand.addEventListener('change', async (event) => {
     render(currentProducts, currentPagination);
     console.log(event.target.value);
   }
-  
+  sorting.selectedIndex = 0;
+
 });
 
 
@@ -277,6 +281,105 @@ reasonable.addEventListener('change', async function()  {
     }
 
     render(currentProducts, currentPagination);
-}) 
+});
      
+/**
+ * Sorting by price
+ * Feature 5
+ * +
+ * Sorting by Date
+ * Feature 6
+ */ 
+
+function Sorting(ArrayToSort) {
+  for (var i=0;i<ArrayToSort.length;i++){
+    var min = i;
+    for (var j=i+1; j<ArrayToSort.length;j++) {
+      if(ArrayToSort[j]['price'] < ArrayToSort[min]['price']){
+        min = j; 
+      }
+   }
+   var tmp = ArrayToSort[i];
+   ArrayToSort[i] = ArrayToSort[min];
+   ArrayToSort[min] = tmp;
+  }
+  return ArrayToSort
+};
+
+function Sorting_inverse(ArrayToSort) {
+  for (var i=0;i<ArrayToSort.length;i++){
+    var min = i;
+    for (var j=i+1; j<ArrayToSort.length;j++) {
+      if(ArrayToSort[j]['price'] > ArrayToSort[min]['price']){
+        min = j; 
+      }
+   }
+   var tmp = ArrayToSort[i];
+   ArrayToSort[i] = ArrayToSort[min];
+   ArrayToSort[min] = tmp;
+  }
+  return ArrayToSort
+};
+
+function Sorting_date(ArrayToSort ) {
+  for (var i=0;i<ArrayToSort.length;i++){
+    var min = i;
+    for (var j=i+1; j<ArrayToSort.length;j++) {
+      if(ArrayToSort[j]['released'] > ArrayToSort[min]['released']){
+        min = j; 
+      }
+   }
+   var tmp = ArrayToSort[i];
+   ArrayToSort[i] = ArrayToSort[min];
+   ArrayToSort[min] = tmp;
+  }
+  return ArrayToSort
+};
+
+function Sorting_date_inverse(ArrayToSort ) {
+  for (var i=0;i<ArrayToSort.length;i++){
+    var min = i;
+    for (var j=i+1; j<ArrayToSort.length;j++) {
+      if(ArrayToSort[j]['released'] < ArrayToSort[min]['released']){
+        min = j; 
+      }
+   }
+   var tmp = ArrayToSort[i];
+   ArrayToSort[i] = ArrayToSort[min];
+   ArrayToSort[min] = tmp;
+  }
+  return ArrayToSort
+};
+
+sorting.addEventListener('change', async(event) => {
+  console.log(currentProducts);
+  if (event.target.value == 'price-asc') {
+    var SortedPriceL = Sorting(currentProducts);
+    var Products = {'result': SortedPriceL, 'meta': currentPagination};
+    setCurrentProducts(Products, currentPagination);
+  }
+
+  if (event.target.value == 'price-desc') {
+    var SortedPriceH = Sorting_inverse(currentProducts);
+    var Products = {'result': SortedPriceH, 'meta': currentPagination};
+    setCurrentProducts(Products, currentPagination);
+  }
+
+  if (event.target.value == 'date-asc') {
+    var SortedDateL = Sorting_date_inverse(currentProducts);
+    console.log(SortedDateL);
+    var Products = {'result': SortedDateL, 'meta': currentPagination};
+    setCurrentProducts(Products, currentPagination);
+  }
+
+  if (event.target.value == 'date-desc') {
+    var SortedDateH = Sorting_date(currentProducts);
+    console.log(SortedDateH);
+    var Products = {'result': SortedDateH, 'meta': currentPagination};
+    setCurrentProducts(Products, currentPagination);
+  }
+
+  render(currentProducts, currentPagination);
+});
+
 
