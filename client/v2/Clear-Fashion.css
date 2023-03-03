@@ -24,19 +24,32 @@ h1, h2 {
     background-color: #f5ddb6;
 
     }
+
+#show {
+    margin-left: 20px;
+    }
+
+#page {
+    margin-left: 20px;
+    }
     
 #filters {
     display: flex;
     align-items: center;
     background-color: #f5ddb6;
     }
-    
+
 #filters span {
     margin: 0 5px;
     color: #999999;
     }
+
+#brand {
+    margin-left: 100px;
+    }
     
-    #sort {
+
+#sort {
     margin-left: auto;
     }
     
