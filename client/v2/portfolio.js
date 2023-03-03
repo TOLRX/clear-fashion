@@ -20,6 +20,7 @@ Search for available brands list
 // current products on the page
 let currentProducts = [];
 let currentPagination = {};
+let favorite_prods = new Set();
 
 // instantiate the selectors
 const selectShow = document.querySelector('#show-select');
@@ -36,6 +37,7 @@ const spanp50 = document.querySelector('#p50');
 const spanp90 = document.querySelector('#p90');
 const spanp95 = document.querySelector('#p95');
 const spanrelease = document.querySelector('#Last_rel');
+const fav = document.querySelector('#favorite');
 
 
 /**
@@ -83,13 +85,17 @@ const fetchProducts = async (page = 1, size = 12) => {
 const renderProducts = products => {
   const fragment = document.createDocumentFragment();
   const div = document.createElement('div');
-  const template = products
+  const template = 
+  //'<div class="product" id=idcol> <span>Product ID</span><a>Product link</a><span>Product price (in €)</span><label class="input-check">favorite checkbox</label></div> '
+  products
     .map(product => {
       return `
       <div class="product" id=${product.uuid}>
         <span>${product.brand}</span>
         <a href="${product.link}" target="_blank">${product.name}</a>
-        <span>${product.price}</span>
+        <span>${product.price} €</span>
+        <label class="input-check"><input type="checkbox" 
+        id=id${product.uuid}> favorite </label>
       </div>
     `;
     })
@@ -138,8 +144,6 @@ const renderPagination = pagination => {
 function percentile_value(arr, p){ // With sorted array
   var ref = -1
   for (var i=0;i<arr.length;i++){
-    console.log(i/arr.length);
-    console.log(arr[i]);
     if((i/arr.length) >= p) {
       if (arr[i-1] != arr[i]) {return arr[i];} // This line is necessary if the value which is over P%
                                          // of the array is equal to the previous one
@@ -163,6 +167,7 @@ function Sorting_val(ArrayToSort) {
 };
 
 
+// Allow to fill all valeus corresponding to API datas.
 const renderIndicators = pagination => {
   const {count} = pagination;
   console.log(pagination);
@@ -173,7 +178,6 @@ const renderIndicators = pagination => {
   //Number of new products
   (async () => {
     const totalproducts = await fetchProducts(1, count);
-    console.log(count);
     //Number of new products
     const recent_obj = totalproducts.result.filter(New_released);
     spanNbNews.innerHTML = recent_obj.length;
@@ -186,14 +190,12 @@ const renderIndicators = pagination => {
     //P-Values :
     var Price_values = totalproducts.result.map(x => x['price']);
     Price_values = Sorting_val(Price_values);
-    console.log(Price_values);
     spanp50.innerHTML = percentile_value(Price_values,0.5);
     spanp90.innerHTML = percentile_value(Price_values,0.9);
     spanp95.innerHTML = percentile_value(Price_values,0.95);
     
     var datesort = totalproducts.result.map(x => x['released']);
     var datesort = Sorting_val(datesort);
-    console.log(datesort);
     spanrelease.innerHTML = datesort[count-1];
 
   })();
@@ -451,4 +453,35 @@ sorting.addEventListener('change', async(event) => {
   render(currentProducts, currentPagination);
 });
 
+
+fav.addEventListener('change', async function()  {
+  var checked = document.querySelector('#favorite:checked') !== null;
+  if(checked) {
+    for (var i=0;i<currentProducts.length;i++){
+      console.log(currentProducts[i])
+
+      var checked_prod = document.querySelector('#id'+currentProducts[i].uuid+':checked') !== null
+      console.log(checked_prod);
+      if(checked_prod){
+        if(!favorite_prods.has(currentProducts[i])) {
+          favorite_prods.add(currentProducts[i])
+        }
+      } else {
+        console.log(favorite_prods);
+        console.log(favorite_prods.has(currentProducts[i]));
+        if(favorite_prods.has(currentProducts[i])) {
+          favorite_prods.delete(currentProducts[i])
+        }
+      } 
+    }
+    var Favprods = {'result': Array.from(favorite_prods), 'meta': currentPagination};
+    setCurrentProducts(Favprods, currentPagination);
+  }
+  else {
+    const products = await fetchProducts(currentPagination.currentPage, currentPagination.pageSize);
+    setCurrentProducts(products);
+  }
+  render(currentProducts, currentPagination);
+
+});
 
