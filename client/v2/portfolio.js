@@ -20,7 +20,7 @@ Search for available brands list
 // current products on the page
 let currentProducts = [];
 let currentPagination = {};
-let favorite_prods = new Set();
+var favorite_prods = (typeof favorite_prods === 'undefined') ? [] : favorite_prods;
 
 // instantiate the selectors
 const selectShow = document.querySelector('#show-select');
@@ -454,29 +454,32 @@ sorting.addEventListener('change', async(event) => {
 });
 
 
+
 fav.addEventListener('change', async function()  {
   var checked = document.querySelector('#favorite:checked') !== null;
-  if(checked) {
-    for (var i=0;i<currentProducts.length;i++){
-      console.log(currentProducts[i])
 
-      var checked_prod = document.querySelector('#id'+currentProducts[i].uuid+':checked') !== null
-      console.log(checked_prod);
+  if(checked) { //Monitor if favorite button is checked
+    for (var i=0;i<currentProducts.length;i++){
+      var checked_prod = document.querySelector('#id'+currentProducts[i].uuid+':checked') !== null // Verify if each product's specific checkbox is checked
       if(checked_prod){
-        if(!favorite_prods.has(currentProducts[i])) {
-          favorite_prods.add(currentProducts[i])
+        var stringified = favorite_prods.map(function(obj) {return JSON.stringify(obj)}) // To make equality check of complex objects
+        if(!stringified.includes(JSON.stringify(currentProducts[i]))) { // If an element was checked but not in the list, it is added.
+          favorite_prods.push(currentProducts[i])
         }
       } else {
-        console.log(favorite_prods);
-        console.log(favorite_prods.has(currentProducts[i]));
-        if(favorite_prods.has(currentProducts[i])) {
-          favorite_prods.delete(currentProducts[i])
+        var stringified = (typeof stringified === 'undefined') ? [] : stringified; 
+        var stringified = favorite_prods.map(function(obj) {return JSON.stringify(obj)})
+        if( stringified.includes(JSON.stringify(currentProducts[i]))) { // If a non checked object is in the list => it is deleted
+          const index = stringified.indexOf(JSON.stringify(currentProducts[i]));
+          stringified.splice(index, 1);
+          favorite_prods = stringified.map(function(obj) {return JSON.parse(obj)})
         }
       } 
     }
-    var Favprods = {'result': Array.from(favorite_prods), 'meta': currentPagination};
+    var Favprods = {'result': favorite_prods, 'meta': currentPagination};
     setCurrentProducts(Favprods, currentPagination);
   }
+
   else {
     const products = await fetchProducts(currentPagination.currentPage, currentPagination.pageSize);
     setCurrentProducts(products);
