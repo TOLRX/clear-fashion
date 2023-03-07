@@ -27,6 +27,8 @@ const parse = data => {
     .get();
 };
 
+
+
 /**
  * Scrape all the products for a given url page
  * @param  {[type]}  url
@@ -50,3 +52,5 @@ module.exports.scrape = async url => {
     return null;
   }
 };
+
+

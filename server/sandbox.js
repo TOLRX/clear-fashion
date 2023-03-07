@@ -1,4 +1,5 @@
 /* eslint-disable no-console, no-process-exit */
+"use strict";
 const dedicatedbrand = require('./eshops/dedicatedbrand');
 
 async function sandbox (eshop = 'https://www.dedicatedbrand.com/en/men/news') {
@@ -6,9 +7,9 @@ async function sandbox (eshop = 'https://www.dedicatedbrand.com/en/men/news') {
     console.log(`🕵️‍♀️  browsing ${eshop} eshop`);
 
     const products = await dedicatedbrand.scrape(eshop);
-
     console.log(products);
     console.log('done');
+    await dedicatedbrand.exportToJsonFile(products);
     process.exit(0);
   } catch (e) {
     console.error(e);
@@ -19,3 +20,5 @@ async function sandbox (eshop = 'https://www.dedicatedbrand.com/en/men/news') {
 const [,, eshop] = process.argv;
 
 sandbox(eshop);
+
+

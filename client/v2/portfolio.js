@@ -58,7 +58,6 @@ const setCurrentProducts = ({result, meta}) => {
  */
 const fetchProducts = async (page = 1, size = 12) => {
   try {
-    const total = parseInt(document.getElementById('nbProducts').textContent) +222;
     if (size === 48 && page >5) {page =5;}
     if (size === 24 && page >10) {page =10;}
     const response = await fetch(
@@ -77,6 +76,27 @@ const fetchProducts = async (page = 1, size = 12) => {
     return {currentProducts, currentPagination};
   }
 };
+
+const chosen_prods = (products) => {
+  var {currentPage} = currentPagination;
+  const {pageSize} = currentPagination;
+  const {count} = currentPagination;
+  if (currentPage> Math.ceil(count/pageSize) ) {
+    currentPage = Math.ceil(products.length/pageSize);
+    products = products.slice((currentPage-1)*pageSize,(currentPage)*pageSize );
+    return products;
+  }
+  else {
+    console.log(currentProducts);
+    console.log(products);
+    console.log((currentPage-1)*pageSize);
+    console.log((currentPage)*pageSize);
+    products = products.slice((currentPage-1)*pageSize,(currentPage)*pageSize );
+    return products;
+
+  }
+}
+
 
 /**
  * Render list of products
@@ -112,6 +132,7 @@ const renderProducts = products => {
  * @param  {Object} pagination
  */
 const renderPagination = pagination => {
+  console.log(currentPagination);
   const {currentPage, pageCount} = pagination;
   const options = Array.from(
     {'length': pageCount},
@@ -127,9 +148,19 @@ const renderPagination = pagination => {
     {'length': Brandnames.length},
     (value, index) => `<option value="${Brandnames[index]}">${Brandnames[index]}</option>`
   ).join('');
+
   selectBrand.innerHTML = Brandsoptions;
+
   if(Brands_set.size == 1) {selectBrand.selectedIndex = 1;}
-  else {selectBrand.selectedIndex = 0;}
+  
+  else {for (var i=0; i<Brandnames.length;i++){
+    if(Brandnames[i] == selectBrand.value) {
+      selectBrand.selectIndex = i;
+    }
+  }
+}
+  
+
 
 
 };
@@ -167,11 +198,10 @@ function Sorting_val(ArrayToSort) {
 };
 
 
-// Allow to fill all valeus corresponding to API datas.
+
+// Allow to fill all values corresponding to API datas.
 const renderIndicators = pagination => {
   const {count} = pagination;
-  console.log(pagination);
-
   //Number of products
   spanNbProducts.innerHTML = count;
 
@@ -218,10 +248,60 @@ const render = (products, pagination) => {
  * Feature 0
  */
 selectShow.addEventListener('change', async (event) => {
-  const products = await fetchProducts(currentPagination.currentPage, parseInt(event.target.value));
-  setCurrentProducts(products);
-  
+  const {count} = currentPagination;
+  const Allproducts = await fetchProducts(1, count);
+  var totalproducts = Allproducts.result;
+
+  // Check if Reasonable is checked
+  var checked = document.querySelector('#reasonable_check:checked') !== null;
+  if (checked) {
+    totalproducts = totalproducts.filter(obj => obj['price'] <50);
+    }
+  //Check if Recent is checked
+  checked = document.querySelector('#recent_check:checked') !== null;
+  if (checked) {
+    totalproducts = totalproducts.filter(New_released);
+    }
+
+  //Check product brands
+  if (selectBrand.value != 'All') {
+    const Brandlist = [...totalproducts];
+    totalproducts =[];
+    for (var i=0;i<Brandlist.length;i++) {
+      if (Brandlist[i]['brand'] == selectBrand.value) {totalproducts.push(Brandlist[i]);}
+    }
+  }
+
+  //Check for sorted data
+  if (sorting.value == 'price-asc') {
+    totalproducts = Sorting(totalproducts);
+  }
+
+  if (sorting.value == 'price-desc') {
+    totalproducts = Sorting_inverse(totalproducts);
+  }
+
+  if (sorting.value == 'date-asc') {
+    totalproducts = Sorting_date_inverse(totalproducts);
+  }
+
+  if (sorting.value == 'date-desc') {
+    totalproducts = Sorting_date(totalproducts);
+  }
+
+
+  currentPagination.pageSize = parseInt(event.target.value);
+
+  currentPagination.pageCount = Math.ceil(totalproducts.length/parseInt(event.target.value));
+  if (currentPagination.currentPage>currentPagination.pageCount) {
+    currentPagination.currentPage = currentPagination.pageCount;
+  }
+
+  var final_prods = chosen_prods(totalproducts);
+  final_prods = {'result': final_prods, 'meta': currentPagination};
+  setCurrentProducts(final_prods, currentPagination);
   render(currentProducts, currentPagination);
+
   sorting.selectedIndex = 0;
 });
 
@@ -239,31 +319,59 @@ document.addEventListener('DOMContentLoaded', async () => {
  * Feature 1
  */ 
 selectPage.addEventListener('change', async (event) => {
-  var products = await fetchProducts(parseInt(event.target.value), currentPagination.pageSize);
-  setCurrentProducts(products, parseInt(event.target.value));
 
-  // Check if Reasonable is checked
+  const {count} = currentPagination;
+  const Allproducts = await fetchProducts(1, count);
+  const {pageSize} = currentPagination;
+  var totalproducts = Allproducts.result;
+
+   // Check if Reasonable is checked
   var checked = document.querySelector('#reasonable_check:checked') !== null;
-  console.log(checked); 
   if (checked) {
-    console.log(products.result);
-    const Reas_obj = products.result.filter(obj => obj['price'] <50);
-    products = {'result': Reas_obj, 'meta': currentPagination};
-    setCurrentProducts(products, currentPagination);
+    totalproducts = totalproducts.filter(obj => obj['price'] <50);
     }
+    
 
   //Check if Recent is checked
   checked = document.querySelector('#recent_check:checked') !== null;
-  console.log(checked);
   if (checked) {
-    const recent_obj = currentProducts.filter(New_released);
-    var RecentProds = {'result': recent_obj, 'meta': currentPagination};
-    setCurrentProducts(RecentProds, currentPagination);
-
+    totalproducts = totalproducts.filter(New_released);
     }
+  currentPagination.currentPage = parseInt(event.target.value);
+  
+  //Check product brands
+  if (selectBrand.value != 'All') {
+    var Brandlists = [...totalproducts];
+    totalproducts = [];
+    console.log(selectBrand.value);
+    console.log(Brandlists);
+    for (var i=0;i<Brandlists.length;i++) {
+      if (Brandlists[i]['brand'] == selectBrand.value) {totalproducts.push(Brandlists[i]);}
+    }
+  }
 
+  //Check for sorted data
+  if (sorting.value == 'price-asc') {
+    totalproducts = Sorting(totalproducts);
+  }
 
+  if (sorting.value == 'price-desc') {
+    totalproducts = Sorting_inverse(totalproducts);
+  }
+
+  if (sorting.value == 'date-asc') {
+    totalproducts = Sorting_date_inverse(totalproducts);
+  }
+
+  if (sorting.value == 'date-desc') {
+    totalproducts = Sorting_date(totalproducts);
+  }
+
+  var final_prods = chosen_prods(totalproducts);
+  final_prods = {'result': final_prods, 'meta': currentPagination};
+  setCurrentProducts(final_prods, currentPagination);
   render(currentProducts, currentPagination);
+
   sorting.selectedIndex = 0;
 });
 
@@ -272,23 +380,108 @@ selectPage.addEventListener('change', async (event) => {
  * Feature 2
  */ 
   
-selectBrand.addEventListener('change', async (event) => { 
-  if (event.target.value === 'All') {
-    const products = await fetchProducts(currentPagination.currentPage, currentPagination.pageSize);
-    setCurrentProducts(products);
-    console.log(products);
-    render(currentProducts, currentPagination);
-  } else {
-    const Brandlist = [];
-    for (var i=0;i<currentProducts.length;i++) {
-      if (currentProducts[i]['brand'] == event.target.value) {Brandlist.push(currentProducts[i]);}
+selectBrand.addEventListener('change', async (event) => {
+  const {count} = currentPagination;
+  const Allproducts = await fetchProducts(1, count);
+  const {pageSize} = currentPagination;
+  var totalproducts = Allproducts.result;
+  if (event.target.value != 'All') {
+    var Brandlist = [];
+    for (var i=0;i<totalproducts.length;i++) {
+      if (totalproducts[i]['brand'] == event.target.value) {Brandlist.push(totalproducts[i]);}
     }
+
+    // Check if Reasonable is checked
+    var checked = document.querySelector('#reasonable_check:checked') !== null;
+    if (checked) {
+      Brandlist = Brandlist.filter(obj => obj['price'] <50);
+      }
+    
+
+    //Check if Recent is checked
+    checked = document.querySelector('#recent_check:checked') !== null;
+    if (checked) {
+      Brandlist = Brandlist.filter(New_released);
+    }
+
+    //Check for sorted data
+    if (sorting.value == 'price-asc') {
+      totalproducts = Sorting(totalproducts);
+    }
+  
+    if (sorting.value == 'price-desc') {
+      totalproducts = Sorting_inverse(totalproducts);
+    }
+  
+    if (sorting.value == 'date-asc') {
+      totalproducts = Sorting_date_inverse(totalproducts);
+    }
+  
+    if (sorting.value == 'date-desc') {
+      totalproducts = Sorting_date(totalproducts);
+    }
+
+    //Update page informations
+    currentPagination.pageCount = Math.ceil(Brandlist.length/currentPagination.pageSize);
+    if (currentPagination.currentPage>currentPagination.pageCount) {
+      currentPagination.currentPage = currentPagination.pageCount;
+    }  
     var Brandobj = {'result': Brandlist, 'meta': currentPagination}
     setCurrentProducts(Brandobj, currentPagination);
-    render(currentProducts, currentPagination);
-    console.log(event.target.value);
+  
+  } else {
+    console.log(currentPagination);
+
+    // Check if Reasonable is checked
+    var checked = document.querySelector('#reasonable_check:checked') !== null;
+    if (checked) {
+      totalproducts = totalproducts.filter(obj => obj['price'] <50);
+      }
+
+    //Check if Recent is checked
+    checked = document.querySelector('#recent_check:checked') !== null;
+    if (checked) {
+      totalproducts = totalproducts.filter(New_released);
+    }
+
+    //Check for sorted data
+    if (sorting.value == 'price-asc') {
+      totalproducts = Sorting(totalproducts);
+    }
+  
+    if (sorting.value == 'price-desc') {
+      totalproducts = Sorting_inverse(totalproducts);
+    }
+  
+    if (sorting.value == 'date-asc') {
+      totalproducts = Sorting_date_inverse(totalproducts);
+    }
+  
+    if (sorting.value == 'date-desc') {
+      totalproducts = Sorting_date(totalproducts);
+    }
+
+    //update the site informations
+    if (totalproducts.length > 0) {
+      currentPagination.pageCount = Math.ceil(totalproducts.length/currentPagination.pageSize);
+    }
+    else {
+      currentPagination.pageCount = Math.ceil(totalproducts.length/pageSize);
+      console.log(totalproducts);
+
+    }
+    if (currentPagination.currentPage>currentPagination.pageCount) {
+      currentPagination.currentPage = currentPagination.pageCount;
+    }  
+    var Brandobj = {'result': totalproducts, 'meta': currentPagination}
+    console.log(totalproducts);
+
+    setCurrentProducts(Brandobj, currentPagination);
   }
-  sorting.selectedIndex = 0;
+
+  console.log(currentPagination);
+
+  render(currentProducts, currentPagination);
 
 });
 
@@ -305,24 +498,113 @@ function New_released(value){
 
 recent.addEventListener('change', async function()  {
   var checked = document.querySelector('#recent_check:checked') !== null;
+  const {count} = currentPagination;
+  const{pageSize} = currentPagination;
+  const Allproducts = await fetchProducts(1, count);
+  var totalproducts = Allproducts.result;
+
   if (checked) {
-    const recent_obj = currentProducts.filter(New_released);
-    var RecentProds = {'result': recent_obj, 'meta': currentPagination};
-    setCurrentProducts(RecentProds, currentPagination);
+    
+    totalproducts = totalproducts.filter(New_released);
+    
+
+    //Check if Reasonable is checked
+    checked = document.querySelector('#reasonable_check:checked') !== null;
+    if (checked) {
+      totalproducts = totalproducts.filter(obj => obj['price'] <50);
+    }
+
+    //Check product brands
+    if (selectBrand.value != 'All') {
+      var Brandlists = [...totalproducts];
+      totalproducts = [];
+      for (var i=0;i<Brandlists.length;i++) {
+        if (Brandlists[i]['brand'] == selectBrand.value) {totalproducts.push(Brandlists[i]);}
+      }
+    }
+
+    //Check for sorted data
+    if (sorting.value == 'price-asc') {
+      totalproducts = Sorting(totalproducts);
+    }
+  
+    if (sorting.value == 'price-desc') {
+      totalproducts = Sorting_inverse(totalproducts);
+    }
+  
+    if (sorting.value == 'date-asc') {
+      totalproducts = Sorting_date_inverse(totalproducts);
+    }
+  
+    if (sorting.value == 'date-desc') {
+      totalproducts = Sorting_date(totalproducts);
+    }
+    
+    //Update page informations
+    if (currentPagination.currentPage>Math.ceil(totalproducts.length /pageSize)) {
+      currentPagination.currentPage = Math.ceil(totalproducts.length/pageSize)
+    }
+    currentPagination.pageCount = Math.ceil(totalproducts.length/pageSize);
+    var Recent_prods = chosen_prods(totalproducts);
+
+    Recent_prods = {'result': Recent_prods, 'meta': currentPagination};
+    setCurrentProducts(Recent_prods, currentPagination);
+
   }
   else {
-    const products = await fetchProducts(currentPagination.currentPage, currentPagination.pageSize);
-    setCurrentProducts(products);
-  }
-  
-  //Check for potential reasonable product
-  checked = document.querySelector('#reasonable_check:checked') !== null;
-  if (checked) {
-    const Reas_obj = currentProducts.filter(obj => obj['price'] <50);
-    var products = {'result': Reas_obj, 'meta': currentPagination};
-    setCurrentProducts(products, currentPagination);
+
+    // Check if Reasonable is checked
+    var checked = document.querySelector('#reasonable_check:checked') !== null;
+    if (checked) {
+      totalproducts = totalproducts.filter(obj => obj['price'] <50);
+      }
+    
+    //Check product brands
+    if (selectBrand.value != 'All') {
+      var Brandlists = [...totalproducts];
+      totalproducts = [];
+      for (var i=0;i<Brandlists.length;i++) {
+        if (Brandlists[i]['brand'] == selectBrand.value) {totalproducts.push(Brandlists[i]);}
+      }
     }
-  render(currentProducts, currentPagination);
+
+    //Check for sorted data
+    if (sorting.value == 'price-asc') {
+      totalproducts = Sorting(totalproducts);
+    }
+  
+    if (sorting.value == 'price-desc') {
+      totalproducts = Sorting_inverse(totalproducts);
+    }
+  
+    if (sorting.value == 'date-asc') {
+      totalproducts = Sorting_date_inverse(totalproducts);
+    }
+  
+    if (sorting.value == 'date-desc') {
+      totalproducts = Sorting_date(totalproducts);
+    }
+
+    //Update Page informations
+    if (totalproducts.length > 0) {
+      currentPagination.pageCount = Math.ceil(totalproducts.length/currentPagination.pageSize);
+    }
+    else {
+      currentPagination.pageCount = Math.ceil(totalproducts.length/pageSize);
+      console.log(totalproducts);
+
+    }
+    if (currentPagination.currentPage>currentPagination.pageCount) {
+      currentPagination.currentPage = currentPagination.pageCount;
+    }  
+    var Prods = {'result': totalproducts, 'meta': currentPagination}
+    console.log(Prods);
+
+    setCurrentProducts(Prods, currentPagination);    
+  }
+
+    render(currentProducts, currentPagination);
+
 }) 
 
 
@@ -332,24 +614,116 @@ recent.addEventListener('change', async function()  {
  */ 
 reasonable.addEventListener('change', async function()  {
   var checked = document.querySelector('#reasonable_check:checked') !== null;
+  const {count} = currentPagination;
+  const{pageSize} = currentPagination;
+  const Allproducts = await fetchProducts(1, count);
+  var totalproducts = Allproducts.result;
+
   if (checked) {
-    const Reas_obj = currentProducts.filter(obj => obj['price'] <50);
-    var ReasProducts = {'result': Reas_obj, 'meta': currentPagination};
+    
+    totalproducts = totalproducts.filter(obj => obj['price'] <50);
+    
+
+    //Check if Recent is checked
+    checked = document.querySelector('#recent_check:checked') !== null;
+    if (checked) {
+      totalproducts = totalproducts.filter(New_released);
+    }
+
+    //Check product brands
+    if (selectBrand.value != 'All') {
+      var Brandlists = [...totalproducts];
+      totalproducts = [];
+      console.log(selectBrand.value);
+      console.log(Brandlists);
+      for (var i=0;i<Brandlists.length;i++) {
+        if (Brandlists[i]['brand'] == selectBrand.value) {totalproducts.push(Brandlists[i]);}
+      }
+    }
+
+    //Check for sorted data
+    if (sorting.value == 'price-asc') {
+      totalproducts = Sorting(totalproducts);
+    }
+  
+    if (sorting.value == 'price-desc') {
+      totalproducts = Sorting_inverse(totalproducts);
+    }
+  
+    if (sorting.value == 'date-asc') {
+      totalproducts = Sorting_date_inverse(totalproducts);
+    }
+  
+    if (sorting.value == 'date-desc') {
+      totalproducts = Sorting_date(totalproducts);
+    }
+
+    //Update page informations
+    if (currentPagination.currentPage>Math.ceil(totalproducts.length /pageSize)) {
+      currentPagination.currentPage = Math.ceil(totalproducts.length/pageSize)
+    }
+    currentPagination.pageCount = Math.ceil(totalproducts.length/pageSize);
+    const Reas_prods = chosen_prods(totalproducts);
+
+    var ReasProducts = {'result': Reas_prods, 'meta': currentPagination};
     setCurrentProducts(ReasProducts, currentPagination);
+
   }
   else {
-    const products = await fetchProducts(currentPagination.currentPage, currentPagination.pageSize);
-    setCurrentProducts(products);
-  }
 
-  //Check if Recent is checked
-  checked = document.querySelector('#recent_check:checked') !== null;
-  console.log(checked);
-  if (checked) {
-    const recent_obj = currentProducts.filter(New_released);
-    var RecentProds = {'result': recent_obj, 'meta': currentPagination};
-    setCurrentProducts(RecentProds, currentPagination);
+    //Check if Recent is checked
+    checked = document.querySelector('#recent_check:checked') !== null;
+    if (checked) {
+      totalproducts = totalproducts.filter(New_released);
     }
+
+    //Check product brands
+    if (selectBrand.value != 'All') {
+      console.log(totalproducts);
+      var Brandlists = [...totalproducts];
+      totalproducts = [];
+      console.log(selectBrand.value);
+      console.log(Brandlists);
+      for (var i=0;i<Brandlists.length;i++) {
+        if (Brandlists[i]['brand'] == selectBrand.value) {totalproducts.push(Brandlists[i]);}
+      }
+    }
+
+    //Check for sorted data
+    if (sorting.value == 'price-asc') {
+      totalproducts = Sorting(totalproducts);
+    }
+  
+    if (sorting.value == 'price-desc') {
+      totalproducts = Sorting_inverse(totalproducts);
+    }
+  
+    if (sorting.value == 'date-asc') {
+      totalproducts = Sorting_date_inverse(totalproducts);
+    }
+  
+    if (sorting.value == 'date-desc') {
+      totalproducts = Sorting_date(totalproducts);
+    }
+
+
+    //Update Page informations
+    if (totalproducts.length > 0) {
+      currentPagination.pageCount = Math.ceil(totalproducts.length/currentPagination.pageSize);
+    }
+    else {
+      currentPagination.pageCount = Math.ceil(totalproducts.length/pageSize);
+      console.log(totalproducts);
+
+    }
+    if (currentPagination.currentPage>currentPagination.pageCount) {
+      currentPagination.currentPage = currentPagination.pageCount;
+    }  
+    var Prods = {'result': totalproducts, 'meta': currentPagination}
+    console.log(Prods);
+
+    setCurrentProducts(Prods, currentPagination);    
+  }
 
     render(currentProducts, currentPagination);
 });
@@ -427,29 +801,25 @@ sorting.addEventListener('change', async(event) => {
   if (event.target.value == 'price-asc') {
     var SortedPriceL = Sorting(currentProducts);
     var Products = {'result': SortedPriceL, 'meta': currentPagination};
-    setCurrentProducts(Products, currentPagination);
   }
 
   if (event.target.value == 'price-desc') {
     var SortedPriceH = Sorting_inverse(currentProducts);
     var Products = {'result': SortedPriceH, 'meta': currentPagination};
-    setCurrentProducts(Products, currentPagination);
   }
 
   if (event.target.value == 'date-asc') {
     var SortedDateL = Sorting_date_inverse(currentProducts);
-    console.log(SortedDateL);
     var Products = {'result': SortedDateL, 'meta': currentPagination};
-    setCurrentProducts(Products, currentPagination);
   }
 
   if (event.target.value == 'date-desc') {
     var SortedDateH = Sorting_date(currentProducts);
     console.log(SortedDateH);
     var Products = {'result': SortedDateH, 'meta': currentPagination};
-    setCurrentProducts(Products, currentPagination);
   }
 
+  setCurrentProducts(Products, currentPagination);
   render(currentProducts, currentPagination);
 });
 
