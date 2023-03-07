@@ -8,23 +8,29 @@ const cheerio = require('cheerio');
  */
 const parse = data => {
   const $ = cheerio.load(data);
-  return $('.productList-container .productList')
+  return $('.text-center.position-relative')
+
     .map((i, element) => {
       const name = $(element)
-        .find('.productList-title')
+        .find('.product-miniature__title .text-reset')
         .text()
         .trim()
         .replace(/\s/g, ' ');
       const price = parseInt(
         $(element)
-          .find('.productList-price')
+          .find('.product-miniature__pricing .price')
           .text()
       );
+      const color = $(element)
+        .find('.product-miniature__color')
+        .text()
+        .trim()
+        .replace(/\s/g, ' '); // Replace space synthax of html per real spaces.
 
-      return {name, price};
+      return {name, price, color};
     })
-    .get();
-};
+    .get(); 
+}; 
 
 
 

@@ -8,20 +8,30 @@ const cheerio = require('cheerio');
  */
 const parse = data => {
   const $ = cheerio.load(data);
-  return $('.productList-container .productList')
+  console.log('INTERRESSANT')  
+  //console.log($('.grid__item .card-information .price .price__container .price__regular .price-item.price-item--regular .money').text());
+  return $('.grid__item')
+  .slice(0,-3)
     .map((i, element) => {
       const name = $(element)
-        .find('.productList-title')
+        .find('.full-unstyled-link')
         .text()
         .trim()
+        .split('  ')[0]
+        .slice(0,-1)
         .replace(/\s/g, ' ');
       const price = parseInt(
         $(element)
-          .find('.productList-price')
+          .find('.card-information .price .price__container .price__regular .price-item.price-item--regular .money')
           .text()
+          .replace(/€/, '')
       );
-
-      return {name, price};
+      var characteristic = $(element)
+        .find('.card__characteristic')
+        .text();
+    characteristic = characteristic.substring(0,characteristic.length/2);
+      console.log(characteristic);
+      return {name, price, characteristic};
     })
     .get();
 };
