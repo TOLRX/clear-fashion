@@ -26,8 +26,9 @@ const parse = data => {
         .text()
         .trim()
         .replace(/\s/g, ' '); // Replace space synthax of html per real spaces.
+      const brand= "monlimart"; // We're scrapping in Dedicatedbrand website so, of course it come from them.
 
-      return {name, price, color};
+      return {name, price, color, brand};
     })
     .get(); 
 }; 

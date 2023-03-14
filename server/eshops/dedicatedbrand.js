@@ -20,8 +20,10 @@ const parse = data => {
           .find('.productList-price')
           .text()
       );
-
-      return {name, price};
+      const brand= "dedicated"; // We're scrapping in Dedicatedbrand website so, of course it come from them.
+      const released_date = null; // Every product is "new_release", so we cannot say if it is the case or not and we have to fill with null values.
+      const color = null;
+      return {name, price, color,  brand, released_date}; 
     })
     .get();
 };

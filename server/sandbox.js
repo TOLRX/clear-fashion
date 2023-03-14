@@ -4,6 +4,23 @@ const dedicatedbrand = require('./eshops/dedicatedbrand');
 const montlimart = require('./eshops/montlimart');
 const circle_sportswear = require('./eshops/circle_sportswear');
 
+const fetchProducts = async (page = 1, size = 12) => {
+  try {
+    const response = await fetch(
+      `https://clear-fashion-api.vercel.app?page=${page}&size=${size}`
+    );
+    const body = await response.json();
+
+    if (body.success !== true) {
+      console.error(body);
+      return {currentProducts, currentPagination};
+    }
+    return body.data;
+  }  catch (error) {
+    console.error(error);
+    return {currentProducts, currentPagination};
+  }
+};
 
 async function sandbox (eshop = 'https://www.dedicatedbrand.com/en/men/news') {
   try {
@@ -41,14 +58,19 @@ async function sandbox (eshop = 'https://www.dedicatedbrand.com/en/men/news') {
 
     //console.log(products4);
 
-    console.log(`🕵️‍♀️  Gathering products ...`)
+    console.log(`🕵️‍♀️  browsing https://clear-fashion-api.vercel.app?page=1&size=200 eshop`);
+  
+    const products5 = await fetchProducts(1,200);
 
-    const products = products1.concat(products2).concat(products3).concat(products4);
 
     console.log('<===============---> 5/6 done');
 
+    console.log(`🕵️‍♀️  Gathering products ...`);
+
+    const products = products1.concat(products2).concat(products3).concat(products4).concat(products5.result);
 
     console.log(products);
+
 
     console.log(`🕵️‍♀️  Creating file`)
 

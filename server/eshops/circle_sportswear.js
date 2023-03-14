@@ -29,9 +29,11 @@ const parse = data => {
       var characteristic = $(element)
         .find('.card__characteristic')
         .text();
+      const brand= "circle sportswear"; // We're scrapping in Dedicatedbrand website so, of course it come from them.
+
     characteristic = characteristic.substring(0,characteristic.length/2);
       console.log(characteristic);
-      return {name, price, characteristic};
+      return {name, price, characteristic, brand};
     })
     .get();
 };
