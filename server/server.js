@@ -30,6 +30,32 @@ async function main() {
     const products = await collection.find({brand}).toArray();;
     console.log('Each products of the brand',brand);
     console.log(products);
+
+    //Find all products less than a price
+
+    price = 47;
+
+    const products2 = await collection.find({"price" : {"$lt" : price}}).toArray();
+    console.log("Each products having a lower price than", price.toString());
+    console.log(products2);
+
+    //Find all products sorted by price
+
+    const products3 = await collection.aggregate([{"$sort" : {"price" : 1}}]).toArray();
+    console.log("Each products sorted by price :");
+    console.log(products3);
+
+    //Find all products sorted by date
+
+    const products4 = await collection.aggregate([{"$sort" : {"released" : 1}}]).toArray();
+    console.log("Each products sorted by date :");
+    console.log(products4);
+
+    //Find all products scraped less than 3 months
+    const products5 = await collection.aggregate([{ $project: { name:1, released:1, releasedate: { $subtract: [ new Date(), {$dateFromString: {"dateString": "$released"  }} ] }} }, {"$match" :{"releasedate":{"$lt" : 3*4*7*24*3600*1000}}}]).toArray();
+    console.log("Each products released less than 2 months ago :");
+    console.log(products5); 
+
   }
 
   main();
