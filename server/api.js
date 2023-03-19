@@ -47,15 +47,24 @@ app.get("/products", async (request, response) => {
   const { limit = 12, brand = 'All brands', price = 'All price' } = request.query;
   collection = db.collection('products');
   if (brand =='All brands' && price == 'All price') {
-    const products = await collection.find().limit(parseInt(limit)).toArray();
+    const products = await collection.find().sort({"price" : 1}).limit(parseInt(limit)).toArray();
     console.log('Each products of the collection');
     console.log(products);
     response.json({"total":products.length, "limit": parseInt(limit), "result": products});
   }
 
   else if (price == 'All price') {
-    const products = await collection.find({brand}).limit(parseInt(limit)).toArray();
+    const products = await collection.find({brand}).sort({"price" : 1}).limit(parseInt(limit)).toArray();
+    response.json({"total":products.length, "limit": parseInt(limit), "result": products});
+  }
+
+  else if (brand == 'All brands') {
+    const products = await collection.find({"price" : {"$lt" : parseInt(price)}}).sort({"price" : 1}).limit(parseInt(limit)).toArray();
     console.log(products);
+    response.json({"total":products.length, "limit": parseInt(limit), "result": products});
+  }
+  else {
+    const products = await collection.find({brand,"price" : {"$lt" : parseInt(price)}}).sort({"price" : 1}).limit(parseInt(limit)).toArray();
     response.json({"total":products.length, "limit": parseInt(limit), "result": products});
   }
   
