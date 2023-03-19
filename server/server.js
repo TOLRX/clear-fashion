@@ -27,7 +27,7 @@ async function main() {
     const brand = 'loom';
 
     const collection = db.collection('products');
-    const products = await collection.find({brand}).toArray();;
+    const products = await collection.find({brand}).toArray();
     console.log('Each products of the brand',brand);
     console.log(products);
 
