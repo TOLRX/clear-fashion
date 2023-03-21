@@ -8,7 +8,6 @@ const PORT = 8092;
 
 const app = express();
 
-module.exports = app;
 
 app.use(require('body-parser').json());
 app.use(cors());
@@ -41,30 +40,35 @@ app.get('/', (request, response) => {
 });
 
 
-
+// Call different products by calling /products?**** (limit = ...&brand=...)
+//addition of size and page to fit well in the client side of TP8
 app.get("/products", async (request, response) => {
   // return updated list
-  const { limit = 12, brand = 'All brands', price = 'All price' } = request.query;
+  db = client.db(dbName);
+  var { limit = 12, brand = 'All brands', price = 'All price', page = 1,size = limit } = request.query;
+  limit=size;
   collection = db.collection('products');
+  const len = (await collection.find().toArray()).length;
+  console.log(len);
   if (brand =='All brands' && price == 'All price') {
-    const products = await collection.find().sort({"price" : 1}).limit(parseInt(limit)).toArray();
+    const products = await collection.find().sort({"price" : 1}).skip(Math.min((page-1)*limit,len-limit)).limit(parseInt(limit)).toArray();
     console.log('Each products of the collection');
     console.log(products);
     response.json({"total":products.length, "limit": parseInt(limit), "result": products});
   }
 
   else if (price == 'All price') {
-    const products = await collection.find({brand}).sort({"price" : 1}).limit(parseInt(limit)).toArray();
+    const products = await collection.find({brand}).sort({"price" : 1}).skip(Math.min((page-1)*limit,len-limit)).limit(parseInt(limit)).toArray();
     response.json({"total":products.length, "limit": parseInt(limit), "result": products});
   }
 
   else if (brand == 'All brands') {
-    const products = await collection.find({"price" : {"$lt" : parseInt(price)}}).sort({"price" : 1}).limit(parseInt(limit)).toArray();
+    const products = await collection.find({"price" : {"$lt" : parseInt(price)}}).sort({"price" : 1}).skip(Math.min((page-1)*limit,len-limit)).limit(parseInt(limit)).toArray();
     console.log(products);
     response.json({"total":products.length, "limit": parseInt(limit), "result": products});
   }
   else {
-    const products = await collection.find({brand,"price" : {"$lt" : parseInt(price)}}).sort({"price" : 1}).limit(parseInt(limit)).toArray();
+    const products = await collection.find({brand,"price" : {"$lt" : parseInt(price)}}).sort({"price" : 1}).skip(Math.min((page-1)*limit,len-limit)).limit(parseInt(limit)).toArray();
     response.json({"total":products.length, "limit": parseInt(limit), "result": products});
   }
   
@@ -72,6 +76,7 @@ app.get("/products", async (request, response) => {
 });
 
 app.get('/products/:id', async (request, response) =>{
+  db = client.db(dbName);
   collection = db.collection('products');
   //We want to be able to search items according to their mongodb id (normal ones) or according to their uuid ids.
   //So we class them according to the type of id they have before printing the item :
@@ -91,4 +96,5 @@ app.listen(PORT, () => {
   console.log(`📡 Running on port ${PORT}`);
 });
 
-
+//Export the Express API
+module.exports = app;
