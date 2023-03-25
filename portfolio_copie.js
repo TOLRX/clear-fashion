@@ -64,7 +64,13 @@ const fetchProducts = async (page = 1, size = 12) => {
       `https://server-tau-taupe-69.vercel.app/products?page=${page}&size=${size}`
     );
     const body = await response.json();
-    return body;
+
+    if (body.success !== true) {
+      console.error(body);
+      return {currentProducts, currentPagination};
+    }
+
+    return body.data;
   } catch (error) {
     console.error(error);
     return {currentProducts, currentPagination};
@@ -399,21 +405,20 @@ selectBrand.addEventListener('change', async (event) => {
     }
 
     //Check for sorted data
-    console.log(sorting.value == 'price-desc');
     if (sorting.value == 'price-asc') {
-      Brandlist = Sorting(Brandlist);
+      totalproducts = Sorting(totalproducts);
     }
   
     if (sorting.value == 'price-desc') {
-      Brandlist = Sorting_inverse(Brandlist);
+      totalproducts = Sorting_inverse(totalproducts);
     }
   
     if (sorting.value == 'date-asc') {
-      Brandlist = Sorting_date_inverse(Brandlist);
+      totalproducts = Sorting_date_inverse(totalproducts);
     }
   
     if (sorting.value == 'date-desc') {
-      Brandlist = Sorting_date(Brandlist);
+      totalproducts = Sorting_date(totalproducts);
     }
 
     //Update page informations

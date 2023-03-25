@@ -54,22 +54,22 @@ app.get("/products", async (request, response) => {
     const products = await collection.find().sort({"price" : 1}).skip(Math.min((page-1)*limit,len-limit)).limit(parseInt(limit)).toArray();
     console.log('Each products of the collection');
     console.log(products);
-    response.json({"total":products.length, "limit": parseInt(limit), "result": products});
+    response.json({"total":products.length, "limit": parseInt(limit), "result": products, "meta": {"currentPage": parseInt(page), "pageSize": parseInt(limit), "count":len, "pageCount":Math.ceil(len/parseInt(limit))}});
   }
 
   else if (price == 'All price') {
     const products = await collection.find({brand}).sort({"price" : 1}).skip(Math.min((page-1)*limit,len-limit)).limit(parseInt(limit)).toArray();
-    response.json({"total":products.length, "limit": parseInt(limit), "result": products});
+    response.json({"total":products.length, "limit": parseInt(limit), "result": products, "meta": {"currentPage": parseInt(page), "pageSize": parseInt(limit), "count":len, "pageCount":Math.ceil(len/parseInt(limit))}});
   }
 
   else if (brand == 'All brands') {
     const products = await collection.find({"price" : {"$lt" : parseInt(price)}}).sort({"price" : 1}).skip(Math.min((page-1)*limit,len-limit)).limit(parseInt(limit)).toArray();
     console.log(products);
-    response.json({"total":products.length, "limit": parseInt(limit), "result": products});
+    response.json({"total":products.length, "limit": parseInt(limit), "result": products, "meta": {"currentPage": parseInt(page), "pageSize": parseInt(limit), "count":len, "pageCount":Math.ceil(len/parseInt(limit))}});
   }
   else {
     const products = await collection.find({brand,"price" : {"$lt" : parseInt(price)}}).sort({"price" : 1}).skip(Math.min((page-1)*limit,len-limit)).limit(parseInt(limit)).toArray();
-    response.json({"total":products.length, "limit": parseInt(limit), "result": products});
+    response.json({"total":products.length, "limit": parseInt(limit), "result": products, "meta": {"currentPage": parseInt(page), "pageSize": parseInt(limit), "count":len, "pageCount":Math.ceil(len/parseInt(limit))}});
   }
   
 
@@ -83,11 +83,11 @@ app.get('/products/:id', async (request, response) =>{
   console.log(request.params.id.length);
   if (request.params.id.length>24){
     const products = await collection.find({"uuid" : request.params.id}).toArray();
-    response.json(products);
+    response.json({"result" :products, "meta": {"currentPage": parseInt(page), "pageSize": parseInt(limit), "count":len, "pageCount":Math.ceil(len/parseInt(limit))}});
   }
   else {
     const products = await collection.find({"_id" : ObjectId(request.params.id)}).toArray();
-    response.json(products);
+    response.json({"result" :products, "meta": {"currentPage": parseInt(page), "pageSize": parseInt(limit), "count":len, "pageCount":Math.ceil(len/parseInt(limit))}});
   } 
 
 })
