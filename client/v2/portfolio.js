@@ -58,8 +58,9 @@ const setCurrentProducts = ({result, meta}) => {
  */
 const fetchProducts = async (page = 1, size = 12) => {
   try {
-    if (size === 48 && page >5) {page =5;}
-    if (size === 24 && page >10) {page =10;}
+    const {pageSize} = currentPagination;
+    const {count} = currentPagination;
+    if (page > Math.ceil(count/pageSize)) {currentPagination.pageSize = Math.ceil(count/pageSize);}
     const response = await fetch(
       `https://server-tau-taupe-69.vercel.app/products?page=${page}&size=${size}`
     );
@@ -126,16 +127,20 @@ const renderProducts = products => {
  * @param  {Object} pagination
  */
 const renderPagination = pagination => {
-  console.log(currentPagination);
+  const {count} = pagination;
   const {currentPage, pageCount} = pagination;
   const options = Array.from(
     {'length': pageCount},
     (value, index) => `<option value="${index + 1}">${index + 1}</option>`
   ).join('');
+  (async () => {
+  const totalproducts = await fetchProducts(1, count);
+
 
   selectPage.innerHTML = options;
   selectPage.selectedIndex = currentPage - 1;
-  const Brands = currentProducts.map(x=>x['brand']);
+  const Brands = totalproducts.result.map(x=>x['brand']);
+  
   var Brands_set = new Set(Brands);
   var Brandnames = Array.from(Brands_set);
   const Brandsoptions = `<option value="All">All</option>` + Array.from(
@@ -144,18 +149,19 @@ const renderPagination = pagination => {
   ).join('');
 
   selectBrand.innerHTML = Brandsoptions;
-
   if(Brands_set.size == 1) {selectBrand.selectedIndex = 1;}
   
   else {for (var i=0; i<Brandnames.length;i++){
     if(Brandnames[i] == selectBrand.value) {
       selectBrand.selectIndex = i;
-    }
-  }
-}
+      }
   
+    }
 
+  }
+})();
 
+  
 
 };
 

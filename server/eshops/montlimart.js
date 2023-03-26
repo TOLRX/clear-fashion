@@ -28,7 +28,10 @@ const parse = data => {
         .replace(/\s/g, ' '); // Replace space synthax of html per real spaces.
       const brand= "monlimart"; // We're scrapping in Dedicatedbrand website so, of course it come from them.
       const released = null; // No date available on the website
-      return {name, price, color, brand, released};
+      const link = $(element)
+      .find('.product-miniature__title .text-reset')
+      .attr('href');
+      return {name, price, color, brand, released, link};
     })
     .get(); 
 }; 
