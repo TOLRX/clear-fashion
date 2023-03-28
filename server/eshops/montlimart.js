@@ -8,11 +8,11 @@ const cheerio = require('cheerio');
  */
 const parse = data => {
   const $ = cheerio.load(data);
-  return $('.text-center.position-relative')
+  return $('.products-list .product-miniature')
 
     .map((i, element) => {
       const name = $(element)
-        .find('.product-miniature__title .text-reset')
+        .find('.product-miniature__title')
         .text()
         .trim()
         .replace(/\s/g, ' ');
@@ -29,9 +29,12 @@ const parse = data => {
       const brand= "monlimart"; // We're scrapping in Dedicatedbrand website so, of course it come from them.
       const released = null; // No date available on the website
       const link = $(element)
-      .find('.product-miniature__title .text-reset')
-      .attr('href');
-      return {name, price, color, brand, released, link};
+        .find('.product-miniature__title .text-reset')
+        .attr('href');
+      const photo = $(element)
+        .find('.product-miniature__thumb-link img')
+        .attr('data-src');
+      return {name, price, color, brand, released, link, photo};
     })
     .get(); 
 }; 

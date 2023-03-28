@@ -29,15 +29,17 @@ const parse = data => {
       var characteristic = $(element)
         .find('.card__characteristic')
         .text();
-      const brand= "circle sportswear"; // We're scrapping in Dedicatedbrand website so, of course it come from them.
+      const brand= "circle Sportswear"; // We're scrapping in Dedicatedbrand website so, of course it come from them.
       const released = null;
       const link = "https://shop.circlesportswear.com/" + $(element)
-      .find('.full-unstyled-link')
-      .attr('href');
+        .find('.full-unstyled-link')
+        .attr('href');
+      const photo =  'https:' +$(element)
+        .find('.card__media img')
+        .attr('src');
 
       characteristic = characteristic.substring(0,characteristic.length/2);
-      console.log(characteristic);
-      return {name, price, characteristic, brand, released, link};
+      return {name, price, characteristic, brand, released, link, photo};
     })
     .get();
 };

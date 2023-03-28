@@ -54,7 +54,7 @@ async function sandbox (eshop = 'https://www.dedicatedbrand.com/en/men/news') {
     
     const products4 = await circle_sportswear.scrape(eshop4);
 
-    console.log('<=========---------> 4/6 done');
+    console.log('<============------> 4/6 done');
 
     //console.log(products4);
 

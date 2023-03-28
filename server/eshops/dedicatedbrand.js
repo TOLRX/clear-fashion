@@ -24,10 +24,13 @@ const parse = data => {
       const released_date = null; // Every product is "new_release", so we cannot say if it is the case or not and we have to fill with null values.
       const color = null;
       const link =  "https://www.dedicatedbrand.com"+$(element)
-      .find('.productList-link')
-      .attr('href');
-      return {name, price, color,  brand, released_date, link}; 
-    })
+        .find('.productList-link')
+        .attr('href');
+      const photo = $(element)
+        .find('.productList-image img')
+        .attr('data-src');
+        return {name, price, color, brand, released_date, link, photo};
+      })
     .get();
 };
 

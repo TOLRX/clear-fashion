@@ -1,6 +1,6 @@
 const products = require('./Products_list.json');
 
-/*
+
 async function main() {
     const {MongoClient} = require('mongodb');
     const MONGODB_URI = 'mongodb+srv://bozo:Caline02@clearfashion.9uooewt.mongodb.net/test';
@@ -13,7 +13,7 @@ async function main() {
     const result = collection.insertMany(products);
     console.log(result);
   }
-  */
+  /*
   async function main(){
     const {MongoClient} = require('mongodb');
     const MONGODB_URI = 'mongodb+srv://bozo:Caline02@clearfashion.9uooewt.mongodb.net/test';
@@ -57,6 +57,6 @@ async function main() {
     console.log(products5); 
 
   }
-
+*/
   main();
   
