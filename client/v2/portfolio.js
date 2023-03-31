@@ -77,6 +77,10 @@ const chosen_prods = (products) => {
   const {pageSize} = currentPagination;
   const {count} = currentPagination;
   if (currentPage> Math.ceil(count/pageSize) ) {
+    console.log(currentProducts);
+    console.log(products);
+    console.log((currentPage-1)*pageSize);
+    console.log((currentPage)*pageSize);
     currentPage = Math.ceil(products.length/pageSize);
     products = products.slice((currentPage-1)*pageSize,(currentPage)*pageSize );
     return products;
@@ -87,6 +91,7 @@ const chosen_prods = (products) => {
     console.log((currentPage-1)*pageSize);
     console.log((currentPage)*pageSize);
     products = products.slice((currentPage-1)*pageSize,(currentPage)*pageSize );
+    console.log(products);
     return products;
 
   }
@@ -100,18 +105,19 @@ const chosen_prods = (products) => {
 const renderProducts = products => {
   const fragment = document.createDocumentFragment();
   const div = document.createElement('div');
+  div.classList.add('container');
   const template = 
   //'<div class="product" id=idcol> <span>Product ID</span><a>Product link</a><span>Product price (in €)</span><label class="input-check">favorite checkbox</label></div> '
   products
     .map(product => {
       return `
-      <div class="product" id=${product.uuid}>
+      <div class="product" id=${product._id}>
         <img src="${product.photo}" id="${product.name}_photo">
         <span>${product.brand}</span>
         <a href="${product.link}" target="_blank">${product.name}</a>
         <span>${product.price} €</span>
         <label class="input-check"><input type="checkbox" 
-        id=id${product.uuid}> favorite </label>
+        id=id${product._id}> favorite </label>
       </div>
     `;
     })
@@ -141,25 +147,29 @@ const renderPagination = pagination => {
   selectPage.innerHTML = options;
   selectPage.selectedIndex = currentPage - 1;
   const Brands = totalproducts.result.map(x=>x['brand']);
-  
+
   var Brands_set = new Set(Brands);
   var Brandnames = Array.from(Brands_set);
+  var brandvalue = selectBrand.value;
   const Brandsoptions = `<option value="All">All</option>` + Array.from(
     {'length': Brandnames.length},
     (value, index) => `<option value="${Brandnames[index]}">${Brandnames[index]}</option>`
   ).join('');
-
   selectBrand.innerHTML = Brandsoptions;
+
   if(Brands_set.size == 1) {selectBrand.selectedIndex = 1;}
-  
+
   else {for (var i=0; i<Brandnames.length;i++){
-    if(Brandnames[i] == selectBrand.value) {
-      selectBrand.selectIndex = i;
+
+    if(Brandnames[i] == brandvalue) {
+      selectBrand.value = Brandnames[i];
       }
   
     }
 
+
   }
+
 })();
 
   
@@ -238,6 +248,7 @@ const render = (products, pagination) => {
   renderProducts(products);
   renderPagination(pagination);
   renderIndicators(pagination);
+  
 };
 
 /**
@@ -406,7 +417,6 @@ selectBrand.addEventListener('change', async (event) => {
     }
 
     //Check for sorted data
-    console.log(sorting.value == 'price-desc');
     if (sorting.value == 'price-asc') {
       Brandlist = Sorting(Brandlist);
     }
@@ -422,13 +432,14 @@ selectBrand.addEventListener('change', async (event) => {
     if (sorting.value == 'date-desc') {
       Brandlist = Sorting_date(Brandlist);
     }
-
     //Update page informations
     currentPagination.pageCount = Math.ceil(Brandlist.length/currentPagination.pageSize);
     if (currentPagination.currentPage>currentPagination.pageCount) {
       currentPagination.currentPage = currentPagination.pageCount;
     }  
-    var Brandobj = {'result': Brandlist, 'meta': currentPagination}
+    var Brand_prods = chosen_prods(Brandlist);
+
+    var Brandobj = {'result': Brand_prods, 'meta': currentPagination}
     setCurrentProducts(Brandobj, currentPagination);
   
   } else {
@@ -474,9 +485,10 @@ selectBrand.addEventListener('change', async (event) => {
     }
     if (currentPagination.currentPage>currentPagination.pageCount) {
       currentPagination.currentPage = currentPagination.pageCount;
-    }  
-    var Brandobj = {'result': totalproducts, 'meta': currentPagination}
-    console.log(totalproducts);
+    } 
+    var Brand_prods = chosen_prods(totalproducts);
+ 
+    var Brandobj = {'result': Brand_prods, 'meta': currentPagination}
 
     setCurrentProducts(Brandobj, currentPagination);
   }
@@ -830,9 +842,9 @@ sorting.addEventListener('change', async(event) => {
 fav.addEventListener('change', async function()  {
   var checked = document.querySelector('#favorite:checked') !== null;
 
-  if(checked) { //Monitor if favorite button is checked
+  if (checked) { //Monitor if favorite button is checked
     for (var i=0;i<currentProducts.length;i++){
-      var checked_prod = document.querySelector('#id'+currentProducts[i].uuid+':checked') !== null // Verify if each product's specific checkbox is checked
+      var checked_prod = document.querySelector('#id'+currentProducts[i]._id+':checked') !== null // Verify if each product's specific checkbox is checked
       if(checked_prod){
         var stringified = favorite_prods.map(function(obj) {return JSON.stringify(obj)}) // To make equality check of complex objects
         if(!stringified.includes(JSON.stringify(currentProducts[i]))) { // If an element was checked but not in the list, it is added.
@@ -853,6 +865,7 @@ fav.addEventListener('change', async function()  {
   }
 
   else {
+    console.log('oui');
     const products = await fetchProducts(currentPagination.currentPage, currentPagination.pageSize);
     setCurrentProducts(products);
   }

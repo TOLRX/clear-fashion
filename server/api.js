@@ -81,16 +81,12 @@ app.get('/products/:id', async (request, response) =>{
   //We want to be able to search items according to their mongodb id (normal ones) or according to their uuid ids.
   //So we class them according to the type of id they have before printing the item :
   console.log(request.params.id.length);
-  if (request.params.id.length>24){
-    const products = await collection.find({"uuid" : request.params.id}).toArray();
-    response.json({"result" :products, "meta": {"currentPage": parseInt(page), "pageSize": parseInt(limit), "count":len, "pageCount":Math.ceil(len/parseInt(limit))}});
-  }
-  else {
-    const products = await collection.find({"_id" : ObjectId(request.params.id)}).toArray();
-    response.json({"result" :products, "meta": {"currentPage": parseInt(page), "pageSize": parseInt(limit), "count":len, "pageCount":Math.ceil(len/parseInt(limit))}});
-  } 
+  
+  const products = await collection.find({"_id" : ObjectId(request.params.id)}).toArray();
+  response.json({"result" :products}); 
 
 })
+
 
 app.listen(PORT, () => {
   console.log(`📡 Running on port ${PORT}`);
