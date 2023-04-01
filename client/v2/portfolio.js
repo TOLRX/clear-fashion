@@ -112,12 +112,14 @@ const renderProducts = products => {
     .map(product => {
       return `
       <div class="product" id=${product._id}>
-        <img src="${product.photo}" id="${product.name}_photo">
-        <span>${product.brand}</span>
+        <img src="${product.photo}" style="border-radius:10px 10px 0px 0px" id="${product.name}_photo">
+        <span style="font-style:italic">${product.brand}</span>
+        <br>
         <a href="${product.link}" target="_blank">${product.name}</a>
         <span>${product.price} €</span>
         <label class="input-check"><input type="checkbox" 
         id=id${product._id}> favorite </label>
+        <label for="id${product._id}" class="icon-label"><i class="fas fa-check"></i></label>
       </div>
     `;
     })
@@ -136,6 +138,10 @@ const renderProducts = products => {
 const renderPagination = pagination => {
   const {count} = pagination;
   const {currentPage, pageCount} = pagination;
+  if (currentPage == 0) {
+    pagination.currentPage =1;
+    currentPage =1;
+  }
   const options = Array.from(
     {'length': pageCount},
     (value, index) => `<option value="${index + 1}">${index + 1}</option>`
@@ -248,7 +254,7 @@ const render = (products, pagination) => {
   renderProducts(products);
   renderPagination(pagination);
   renderIndicators(pagination);
-  
+  console.log(pagination);
 };
 
 /**
@@ -610,8 +616,10 @@ recent.addEventListener('change', async function()  {
     }
     if (currentPagination.currentPage>currentPagination.pageCount) {
       currentPagination.currentPage = currentPagination.pageCount;
-    }  
-    var Prods = {'result': totalproducts, 'meta': currentPagination}
+    } 
+    var Recent_prods = chosen_prods(totalproducts);
+ 
+    var Prods = {'result': Recent_prods, 'meta': currentPagination}
     console.log(Prods);
 
     setCurrentProducts(Prods, currentPagination);    
@@ -733,7 +741,9 @@ reasonable.addEventListener('change', async function()  {
     if (currentPagination.currentPage>currentPagination.pageCount) {
       currentPagination.currentPage = currentPagination.pageCount;
     }  
-    var Prods = {'result': totalproducts, 'meta': currentPagination}
+    const Reas_prods = chosen_prods(totalproducts);
+
+    var Prods = {'result': Reas_prods, 'meta': currentPagination}
     console.log(Prods);
 
     setCurrentProducts(Prods, currentPagination);    
