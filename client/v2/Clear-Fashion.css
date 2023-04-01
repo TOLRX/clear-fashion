@@ -14,18 +14,36 @@ body {
     margin-right: 100px;
     }
     
-h1, h2 {
-    color: #dfeffd;
-    text-decoration : underline;
-    background-color: #333333;
-    font-weight: bold;
-    margin-left: 500px;
-    margin-right: 500px;
-    text-align: center;
-    border-radius: 100px 100px 100px 100px;  
-    border: 2px solid #dddddd;
-
+    h1, h2 {
+        font-family: 'Times New Roman', Times, serif;
+        color: #dfeffd;
+        text-decoration: underline;
+        background-color: #333333;
+        font-weight: bold;
+        margin-left: 500px;
+        margin-right: 500px;
+        text-align: center;
+        border-radius: 100px;
+        border: 2px solid #dddddd;
+      }
+      
+     /* Define the sliding and fading animation */
+    @keyframes slide-in {
+        0% {
+        transform: translateX(-100%);
+        opacity: 0; /* Start with zero opacity */
+        visibility: visible;
+        }
+        100% {
+        transform: translateX(0);
+        opacity: 1; /* End with full opacity */
+        }
     }
+      
+      /* Apply the animation to the elements */
+      h1, h2 {
+        animation: slide-in 1s ease-out forwards; /* Play the animation once when the page loads */
+      }
     
     /* Section styles */
 #options {
@@ -43,10 +61,10 @@ h1, h2 {
     margin-bottom: 0.5em;
   }
   
-  label {
+#options label {
     font-size: 1.2em;
     font-weight: bold;
-    color: #525252;
+    color: #414b00;
     margin-right: 0.5em;
   }
   
@@ -71,9 +89,15 @@ h1, h2 {
     }
 
 #filters span {
-    margin: 0 5px;
-    color: #494848;
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #414b00;
     }
+
+#filters span:not(:first-child) {
+    margin-right: 12px;
+   }
 
 #brand {
     margin-left: 100px;
@@ -250,7 +274,7 @@ label {
   display: block;
   margin-bottom: 5px;
   font-weight: bold;
-  color: #5b6900;
+  color: #ea8d99;
 }
 
 select {
