@@ -1,7 +1,7 @@
 # 👕 Clear Fashion
 
-<!-- API link : https://server-tau-taupe-69.vercel.app/ -->
-<!-- Client app link : https://client-psi-snowy.vercel.app/ -->
+- API link : https://server-tau-taupe-69.vercel.app/ 
+- Client app link : https://client-psi-snowy.vercel.app/ 
 
 > What's the story behind each item of clothing you buy?
 
