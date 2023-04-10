@@ -1,8 +1,46 @@
-# 👕 Clear Fashion
+# 👕 Clear Fashion 
 
-=> API link : https://server-tau-taupe-69.vercel.app/ 
+👋 Salut utilisateur,
+
+Bienvenue sur notre API de produits ! Voici tout ce que vous devez savoir pour commencer :
+
+📋 Commandes
+Nous avons deux commandes principales :
+
+/products : cette commande affiche les 12 premiers produits disponibles dans notre base de données.
+/product? : cette commande permet de filtrer les produits en fonction de plusieurs critères.
+
+🔍 Filtrage
+Pour utiliser la commande /product?, vous pouvez utiliser n'importe quel mot-clé pour filtrer les résultats de la manière suivante : paramètre=x. Voici quelques exemples :
+
+‘size’ : Gerer le nombre de produit affiché.
+‘total’ : Gérer le total de produit proposé par l'API.
+‘brand’ : filtrer les produits par marque.
+‘price’ : filtrer les produits par prix (étant inferieur au prix indiqué).
+‘page’ : afficher une page spécifique de résultats, géré avec le paramètre size (ou total).
+. . .
+
+N'oubliez pas d'espacer chaque paramètre par le caractère '&'.
+
+=> API link : https://server-tau-taupe-69.vercel.app/
+
+Maintenant que vous avez compris comment utiliser mon API de produits, je suis heureux de vous présenter mon site web d'achats de produits, qui utilise l'API précédente pour afficher les produits aux utilisateurs.
+
+🛍️ Fonctionnalités
+Mon site web propose les fonctionnalités suivantes :
+
+- Affichage des produits disponibles à partir de notre API de produits.
+- Tri des produits par date de sortie, poids, marque ou favoris.
+- Affichage d'images des produits pour aider les utilisateurs à choisir les produits qu'ils souhaitent acheter.
+- Redirection vers les sites concernés si les produits les intéressent.
+- Design soigné et convivial pour une expérience utilisateur optimale.
 
 => Client app link : https://client-psi-snowy.vercel.app/ 
+
+🙏 Remerciements
+Nous sommes ravis de vous présenter notre site web d'achats de produits, et nous espérons que vous apprécierez l'expérience utilisateur que nous avons créée pour vous.
+
+⚠️ Il est possible que le format des titres soit bizarre, c'est un problème que j'ai rencontré en changeant de taille d'écran d'ordinateur car j'ai toujours travaillé sur un 15.6 pouces. C'est un problème que j'avais corrigé mais je n'ai pas pu le pull dans le github de référence car celui-ci n'autorisais plus les pull à partir d'une certaine date.
 
 > What's the story behind each item of clothing you buy?
 
